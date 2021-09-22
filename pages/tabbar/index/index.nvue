@@ -1,0 +1,86 @@
+<template>
+	<view style="">
+		<!-- 导航栏 -->
+		<free-nav-bar :title="title"></free-nav-bar>
+		<!-- 列表 -->
+		<block v-for="(item,index) in chatList" :key="index">
+			<free-media-list :item="item" :index="index"></free-media-list>
+			<!-- <view class="flex align-center w-100  align-stretch">
+				<view class="flex align-center justify-center position-relative" style="width: 145rpx;height: 100%;">
+					<free-avatar :src="item.avatar" :size="92" class=""></free-avatar>
+					<free-badge :badgeClass="'position-absolute'" :badgeStyle="'top: 15rpx;right: 15rpx;'" :value="1"></free-badge>
+				</view>
+				<view
+					class="flex-1 flex justify-center flex-column py-3 pr-3  justify-start border-bottom border-light-secondary">
+					<view class="flex align-center justify-between mb-1">
+						<text class="font-md">{{item.nickname}}</text>
+						<text class="font-sm text-light-muted">{{item.update_time | formatTime}}</text>
+					</view>
+					<text class="font text-light-muted text-ellipsis">{{item.data}}</text>
+				</view>
+			</view> -->
+		</block>
+
+	</view>
+</template>
+
+<script>
+	import freeNavBar from '@/component/free-ui/free-nav-bar.vue'
+	import freeIconButton from '@/component/free-ui/free-icon-button.vue'
+	import freeMediaList from '@/component/free-ui/free-media-list.vue'
+	export default {
+		components: {
+			freeNavBar,
+			freeIconButton,
+			freeMediaList
+		},
+		data() {
+			return {
+				title: '微信(10)',
+				statusBarHeight: 0,
+				chatList: [{
+						avatar: '/static/images/demo/demo6.jpg',
+						nickname: 'jack',
+						update_time: 1632347137,
+						data: '来消息了',
+						noreadnum: 1
+					},
+					{
+						avatar: '/static/images/demo/demo6.jpg',
+						nickname: 'jack',
+						update_time: 1632347137,
+						data: '来消息了',
+						noreadnum: 0
+					},
+					{
+						avatar: '/static/images/demo/demo6.jpg',
+						nickname: 'jack',
+						update_time: 1632347137,
+						data: '来消息了',
+						noreadnum: 0
+					},
+					{
+						avatar: '/static/images/demo/demo6.jpg',
+						nickname: 'jack',
+						update_time: 1632347137,
+						data: '来消息了',
+						noreadnum: 0
+					}
+				]
+			}
+		},
+		onLoad() {
+			// #ifdef APP-PLUS-NVUE
+			this.statusBarHeight = plus.navigator.getStatusbarHeight()
+			console.log(this.statusBarHeight, 'statusBarHeight');
+			// #endif
+		},
+		methods: {
+
+		}
+	}
+</script>
+
+<style scoped>
+	
+</style>

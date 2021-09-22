@@ -1,0 +1,18 @@
+.page {
+	background-color: #ededed;
+	/* #ifndef APP-PLUS-NVUE */
+	min-height: 100vh;
+	height: auto;
+	/* #endif */
+	/* #ifdef APP-PLUS-NVUE */
+	flex: 1;
+	/* #endif */
+}
+
+.main-bg-color {
+	background-color: #08c060;
+}
+
+.main-text-color {
+	color: #08c060;
+}

@@ -1,0 +1,42 @@
+<template>
+	<view class="flex align-stretch" @click="$emit('click')" @longpress="handleLongPress">
+		<view class="flex align-center justify-center position-relative " style="width: 145rpx;">
+			<free-avatar :src="item.avatar" :size="92" class=""></free-avatar>
+			<free-badge :badgeClass="'position-absolute'" :badgeStyle="'top: 15rpx;right: 15rpx;'" :value="item.noreadnum" v-if="item.noreadnum"></free-badge>
+		</view>
+		<view
+			class="flex-1 flex justify-center flex-column py-3 pr-3  justify-start border-bottom border-light-secondary">
+			<view class="flex align-center justify-between mb-1">
+				<text class="font-md">{{item.nickname}}</text>
+				<text class="font-sm text-light-muted">{{item.update_time | formatTime}}</text>
+			</view>
+			<text class="font text-light-muted text-ellipsis">{{item.data}}</text>
+		</view>
+	</view>
+</template>
+
+<script>
+	import freeAvatar from '@/component/free-ui/free-avatar.vue'
+	import freeBadge from '@/component/free-ui/free-badge.vue'
+	import freeBase from '@/common/mixin/free-base.js'
+	import $Time from '@/common/free-lib/time.js'
+	export default {
+		mixins:[freeBase],
+		components: {
+			freeAvatar,
+			freeBadge
+		},
+		 props: {
+			 item:Object,
+			 index: Number
+		 },
+		 methods: {
+			 handleLongPress(e) {
+				 console.log(e,'7777');
+			 }
+		 }
+	}
+</script>
+
+<style>
+</style>
