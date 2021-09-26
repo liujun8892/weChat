@@ -5,11 +5,11 @@
 			<view class="status-bar" :style="{height: statusBarHeight + 'px'}"></view>
 			<view class="w-100 flex align-center justify-between" style="height: 90rpx;">
 				<view class="ml-3">
-					<text class="font-md" v-if="isTitleShow">{{title}}</text>
+					<text class="font-md" v-if="isTitleShow">{{getMsgText}}</text>
 				</view>
 				<view class="flex align-center">
-					<free-icon-button :icon="'\ue6e3'"></free-icon-button>
-					<free-icon-button :icon="'\ue682'"></free-icon-button>
+					<free-icon-button :icon="'\ue6e3'"  @click="search"></free-icon-button>
+					<free-icon-button :icon="'\ue682'" @click="extend"></free-icon-button>
 				</view>
 			</view>
 		</view>
@@ -25,6 +25,11 @@
 		components: {
 			freeIconButton
 		},
+		computed: {
+			getMsgText() {
+				return this.msgCount > 0 ? `微信(${this.msgCount})` : `微信` 
+			}
+		},
 		props: {
 			isTitleShow: {
 				type: Boolean,
@@ -37,6 +42,10 @@
 			isFixed: {
 				type: Boolean,
 				default: true
+			},
+			msgCount: {
+				type: Number,
+				default: 0
 			}
 		},
 		data() {
@@ -51,6 +60,14 @@
 			console.log(this.statusBarHeight,'statusBarHeight');
 			// #endif
 			this.placeHolderHeight = this.statusBarHeight + uni.upx2px(90)
+		},
+		methods:{
+			search() {
+				this.$emit('search')
+			},
+			extend() {
+				this.$emit('extend')
+			}
 		}
 		
 	}

@@ -33,6 +33,14 @@
 		 methods: {
 			 handleLongPress(e) {
 				 console.log(e,'7777');
+				 let x = 0
+				 let y = 0
+				 if(e.touches && Array.isArray(e.touches) && e.touches.length > 0) {
+					 x = e.touches[0].pageX
+					 y = e.touches[0].pageY
+				 }
+				 console.log(x,y,'坐标....');
+				 this.$emit('long',{x,y})
 			 }
 		 }
 	}
