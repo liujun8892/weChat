@@ -1,1 +1,1 @@
-<image class="{{[type]}}" style="{{'width:'+(size+'rpx')+';'+('height:'+(size+'rpx')+';')}}" src="{{src}}" mode="widthFix"></image>
+<view class="position-relative"><image class="{{[type]}}" style="{{'width:'+(size+'rpx')+';'+('height:'+(size+'rpx')+';')}}" src="{{src}}" mode="widthFix"></image><block wx:if="{{showDotBadge}}"><text class="rounded-circle bg-danger position-absolute" style="width:20rpx;height:20rpx;top:-10rpx;right:-10rpx;"></text></block></view>

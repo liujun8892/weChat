@@ -130,53 +130,140 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-var _default =
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var freeNavBar = function freeNavBar() {__webpack_require__.e(/*! require.ensure | component/free-ui/free-nav-bar */ "component/free-ui/free-nav-bar").then((function () {return resolve(__webpack_require__(/*! @/component/free-ui/free-nav-bar.vue */ 43));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var freeFindList = function freeFindList() {__webpack_require__.e(/*! require.ensure | component/free-ui/free-find-list */ "component/free-ui/free-find-list").then((function () {return resolve(__webpack_require__(/*! @/component/free-ui/free-find-list.vue */ 94));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var freeDivider = function freeDivider() {__webpack_require__.e(/*! require.ensure | component/free-ui/free-divider */ "component/free-ui/free-divider").then((function () {return resolve(__webpack_require__(/*! ../../../component/free-ui/free-divider.vue */ 99));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {
+  components: {
+    freeNavBar: freeNavBar,
+    freeFindList: freeFindList,
+    freeDivider: freeDivider },
+
   data: function data() {
-    return {};
+    return {
+      // 发现列表
+      findList: [{
+        icon: "\uE667",
+        name: '朋友圈',
+        avatar: '/static/images/mail/friend.png',
+        isDivider: true },
+
+      {
+        icon: "\uE667",
+        name: '视频号',
+        avatar: '/static/images/mail/friend.png',
+        isDivider: false },
+
+      {
+        icon: "\uE667",
+        name: '直播',
+        avatar: '',
+        isDivider: true },
+
+      {
+        icon: "\uE667",
+        name: '扫一扫',
+        avatar: '/static/images/mail/friend.png',
+        isDivider: false },
+
+      {
+        icon: "\uE667",
+        name: '摇一摇',
+        avatar: '',
+        isDivider: true },
+
+      {
+        icon: "\uE667",
+        name: '看一看',
+        avatar: '/static/images/mail/friend.png',
+        isDivider: false },
+
+      {
+        icon: "\uE667",
+        name: '搜一搜',
+        avatar: '/static/images/mail/friend.png',
+        isDivider: true },
+
+      {
+        icon: "\uE667",
+        name: '附近',
+        avatar: '/static/images/mail/friend.png',
+        isDivider: true },
+
+      {
+        icon: "\uE667",
+        name: '购物',
+        avatar: '/static/images/mail/friend.png',
+        isDivider: false },
+
+      {
+        icon: "\uE667",
+        name: '游戏',
+        avatar: '/static/images/mail/friend.png',
+        isDivider: true },
+
+      {
+        icon: "\uE667",
+        name: '小程序',
+        avatar: '/static/images/mail/friend.png',
+        isDivider: false }] };
+
 
 
   },
-  methods: {} };exports.default = _default;
+  methods: {
+    handSearch: function handSearch() {
+
+    },
+    handExtend: function handExtend() {
+      this.$refs.navBar.showPopup();
+    } } };exports.default = _default;
 
 /***/ }),
 

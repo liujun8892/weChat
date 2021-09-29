@@ -1,5 +1,8 @@
 {
   "navigationBarTitleText": "",
   "enablePullDownRefresh": false,
-  "usingComponents": {}
+  "usingComponents": {
+    "free-nav-bar": "/component/free-ui/free-nav-bar",
+    "free-mail-list": "/component/free-ui/free-mail-list"
+  }
 }

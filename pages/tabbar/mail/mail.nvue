@@ -1,22 +1,121 @@
 <template>
-	<view>
-		
+	<view class="bg-white">
+		<!-- 导航栏 -->
+		<free-nav-bar title="通讯录" @search="handSearch" @extend="handExtend" ref='navBar'></free-nav-bar>
+		<!-- 通讯录功能列表 -->
+		<block v-for="(item,index) in mailFunctionList">
+			<free-mail-list :key="index" :item="item"></free-mail-list>
+		</block>
+		<!-- 通讯录列表 -->
+		<view class="" v-for="(item,index) in mailList" :key="index">
+			<view class="px-3 py-2 bg-light" v-if="item.data && item.data.length > 0">
+				<text class="font-md text-dark">{{item.letter}}</text>
+			</view>
+			<free-mail-list v-for="(item2,index2) in item.data" :item="item2" :key="index2"
+			 :showBottom="index2 != item.data.length -1"></free-mail-list>
+		</view>
 	</view>
+	
 </template>
 
 <script>
+	import freeNavBar from '@/component/free-ui/free-nav-bar.vue'
+	import freeMailList from '@/component/free-ui/free-mail-list.vue'
 	export default {
+		components: {
+			freeNavBar,
+			freeMailList
+		},
 		data() {
 			return {
-				
+				item: {
+
+					name: '新的朋友',
+					cover: '/static/images/mail/friend.png',
+					event: ''
+				},
+				// 通讯录功能列表
+				mailFunctionList: [{
+						name: '新的朋友',
+						cover: '/static/images/mail/friend.png',
+						event: ''
+					},
+					{
+						name: '群聊',
+						cover: '/static/images/mail/group.png',
+						event: ''
+					},
+					{
+						name: '标签',
+						cover: '/static/images/mail/tag.png',
+						event: ''
+					}
+				],
+				// 通讯录列表
+				mailList: [{
+						letter: 'A',
+						data: [{
+								name: '标签',
+								cover: '/static/images/mail/friend.png',
+								event: ''
+							},
+							{
+								name: '安其拉',
+								cover: '/static/images/mail/friend.png',
+								event: ''
+							},
+							{
+								name: '安妮',
+								cover: '/static/images/mail/friend.png',
+								event: ''
+							},
+						]
+					},
+					{
+						letter: 'B',
+						data: [{
+								name: '贝利',
+								cover: '/static/images/mail/friend.png',
+								event: ''
+							},
+							{
+								name: '贝贝',
+								cover: '/static/images/mail/friend.png',
+								event: ''
+							},
+							{
+								name: '安妮',
+								cover: '/static/images/mail/friend.png',
+								event: ''
+							},
+						]
+					},
+					{
+						letter: 'C',
+						data: []
+					},
+					{
+						letter: 'D',
+						data: [{
+								name: '大熊',
+								cover: '/static/images/mail/friend.png',
+								event: ''
+							}]
+					},
+				]
 			}
 		},
 		methods: {
-			
+			handExtend(e) {
+				console.log(e, 'extend...');
+				this.$refs.navBar.showPopup()
+			},
 		}
 	}
 </script>
 
-<style>
-
+<style scoped>
+	.bg-pink {
+		background-color: pink !important;
+	}
 </style>

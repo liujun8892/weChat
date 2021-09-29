@@ -1,18 +1,104 @@
 <template>
 	<view>
-		
+		<!-- 导航栏 -->
+		<free-nav-bar title="发现" @search="handSearch" @extend="handExtend" ref='navBar'></free-nav-bar>
+		<!-- 发现列表 -->
+		<block v-for="(item, index) in findList">
+			<free-find-list :key="index" :item="item" >	</free-find-list>
+			<free-divider v-if="item.isDivider"></free-divider>
+		</block>
 	</view>
 </template>
 
 <script>
+	import freeNavBar from '@/component/free-ui/free-nav-bar.vue'
+	import freeFindList from '@/component/free-ui/free-find-list.vue'
+	import freeDivider from '../../../component/free-ui/free-divider.vue'
 	export default {
+		components: {
+			freeNavBar,
+			freeFindList,
+			freeDivider
+		},
 		data() {
 			return {
-				
+				// 发现列表
+				findList: [{
+						icon: '\ue667',
+						name: '朋友圈',
+						avatar: '/static/images/mail/friend.png',
+						isDivider: true
+					},
+					{
+						icon: '\ue667',
+						name: '视频号',
+						avatar: '/static/images/mail/friend.png',
+						isDivider: false
+					},
+					{
+						icon: '\ue667',
+						name: '直播',
+						avatar: '',
+						isDivider: true
+					},
+					{
+						icon: '\ue667',
+						name: '扫一扫',
+						avatar: '/static/images/mail/friend.png',
+						isDivider: false
+					},
+					{
+						icon: '\ue667',
+						name: '摇一摇',
+						avatar: '',
+						isDivider: true
+					},
+					{
+						icon: '\ue667',
+						name: '看一看',
+						avatar: '/static/images/mail/friend.png',
+						isDivider: false
+					},
+					{
+						icon: '\ue667',
+						name: '搜一搜',
+						avatar: '/static/images/mail/friend.png',
+						isDivider: true
+					},
+					{
+						icon: '\ue667',
+						name: '附近',
+						avatar: '/static/images/mail/friend.png',
+						isDivider: true
+					},
+					{
+						icon: '\ue667',
+						name: '购物',
+						avatar: '/static/images/mail/friend.png',
+						isDivider: false
+					},
+					{
+						icon: '\ue667',
+						name: '游戏',
+						avatar: '/static/images/mail/friend.png',
+						isDivider: true
+					},
+					{
+						icon: '\ue667',
+						name: '小程序',
+						avatar: '/static/images/mail/friend.png',
+						isDivider: false
+					}
+				],
 			}
 		},
 		methods: {
-			
+			handSearch() {
+				
+			},
+			handExtend() {
+				this.$refs.navBar.showPopup()
+			}
 		}
 	}
 </script>

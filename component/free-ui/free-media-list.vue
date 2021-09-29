@@ -1,5 +1,5 @@
 <template>
-	<view class="flex align-stretch" @click="$emit('click')" @longpress="handleLongPress">
+	<view class="flex align-stretch" @click="$emit('click')"  :class="item.isTop ? 'bg-light' : 'bg-white'" @longpress="handleLongPress" hover-class="bg-light">
 		<view class="flex align-center justify-center position-relative " style="width: 145rpx;">
 			<free-avatar :src="item.avatar" :size="92" class=""></free-avatar>
 			<free-badge :badgeClass="'position-absolute'" :badgeStyle="'top: 15rpx;right: 15rpx;'" :value="item.noreadnum" v-if="item.noreadnum"></free-badge>
@@ -40,7 +40,8 @@
 					 y = e.touches[0].pageY
 				 }
 				 console.log(x,y,'坐标....');
-				 this.$emit('long',{x,y})
+				 console.log(this.index,'index...');
+				 this.$emit('long',{x,y,index: this.index})
 			 }
 		 }
 	}

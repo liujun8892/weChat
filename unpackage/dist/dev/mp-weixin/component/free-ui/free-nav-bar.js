@@ -112,7 +112,18 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var freeIconButton = function freeIconButton() {__webpack_require__.e(/*! require.ensure | component/free-ui/free-icon-button */ "component/free-ui/free-icon-button").then((function () {return resolve(__webpack_require__(/*! ./free-icon-button.vue */ 48));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default =
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var freeIconButton = function freeIconButton() {__webpack_require__.e(/*! require.ensure | component/free-ui/free-icon-button */ "component/free-ui/free-icon-button").then((function () {return resolve(__webpack_require__(/*! ./free-icon-button.vue */ 48));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var freePopup = function freePopup() {__webpack_require__.e(/*! require.ensure | component/free-ui/free-popup */ "component/free-ui/free-popup").then((function () {return resolve(__webpack_require__(/*! @/component/free-ui/free-popup.vue */ 60));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default =
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -137,11 +148,16 @@ __webpack_require__.r(__webpack_exports__);
 
 {
   components: {
-    freeIconButton: freeIconButton },
+    freeIconButton: freeIconButton,
+    freePopup: freePopup },
 
   computed: {
     getMsgText: function getMsgText() {
-      return this.msgCount > 0 ? "\u5FAE\u4FE1(".concat(this.msgCount, ")") : "\u5FAE\u4FE1";
+      return this.msgCount > 0 ? "".concat(this.title, "(").concat(this.msgCount, ")") : "".concat(this.title);
+    },
+    getChatPopHeight: function getChatPopHeight() {
+      var H = 100;
+      return this.extendsOptionsList.length * H;
     } },
 
   props: {
@@ -165,7 +181,34 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       statusBarHeight: 0,
-      placeHolderHeight: 0 };
+      placeHolderHeight: 0,
+      extendsOptionsList: [
+      {
+        name: '发起群聊',
+        event: '',
+        icon: "\uE633" },
+
+      {
+        name: '添加好友',
+        event: '',
+        icon: "\uE65D" },
+
+      {
+        name: '扫一扫',
+        event: '',
+        icon: "\uE614" },
+
+      {
+        name: '收付款',
+        event: '',
+        icon: "\uE66C" },
+
+      {
+        name: '帮助与反馈',
+        event: '',
+        icon: "\uE613" }] };
+
+
 
   },
   mounted: function mounted() {
@@ -176,11 +219,23 @@ __webpack_require__.r(__webpack_exports__);
     this.placeHolderHeight = this.statusBarHeight + uni.upx2px(90);
   },
   methods: {
+    handMenu: function handMenu(e) {
+      e.stopPropagation();
+      console.log(e, 5555);
+      // console.log(eventName,'444');
+    },
     search: function search() {
       this.$emit('search');
     },
-    extend: function extend() {
+    extend: function extend(e) {
+      console.log(e, 'extend...');
       this.$emit('extend');
+    },
+    showPopup: function showPopup() {
+      this.$refs.popup.showPopup(700, this.placeHolderHeight);
+    },
+    hidePopup: function hidePopup() {
+      this.$refs.popup.hidePopup();
     } } };exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 

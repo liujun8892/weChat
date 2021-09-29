@@ -3512,6 +3512,16 @@ module.exports = {
       ]
     }
   },
+  ".bg-chat-item": {
+    "": {
+      "backgroundColor": [
+        "#6BEE68",
+        0,
+        0,
+        270
+      ]
+    }
+  },
   "@VERSION": 2
 }
 

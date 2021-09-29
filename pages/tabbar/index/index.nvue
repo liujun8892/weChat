@@ -1,14 +1,22 @@
 <template>
-	<view style="">
+	<view style="" class="bg-white">
 		<!-- 导航栏 -->
-		<free-nav-bar :msgCount="msgCount" @search="handSearch" @extend="handExtend" ></free-nav-bar>
-		<!-- 列表 -->
+		<free-nav-bar title="微信" :msgCount="msgCount" @search="handSearch" @extend="handExtend" ref='navBar'></free-nav-bar>
+		<!-- 列表 - 置顶-->
 		<block v-for="(item,index) in chatList" :key="index">
-			<free-media-list :item="item" :index="index" @long="handleLongPress"></free-media-list>
+			<free-media-list :item="item" :index="index" @long="handleLongPress" v-if="item.isTop" @click="jumpTo(pageList.chatDetail)"></free-media-list>
+		</block>
+		<!-- 列表 - 非置顶-->
+		<block v-for="(item,index) in chatList" :key="index">
+			<free-media-list :item="item" :index="index" @long="handleLongPress" v-if="!item.isTop" @click="jumpTo(pageList.chatDetail)"></free-media-list>
 		</block>
 		<!-- 弹出组件 -->
-		<free-popup ref="popup">
-			<view style="width: 400rpx;height: 500rpx;"></view>
+		<free-popup ref="popup" :contentWidth="240" :contentHeight="getChatPopHeight" :maskShow="false">
+			<view class="flex flex-column" style="width: 240rpx;" :style="{height: getChatPopHeight + 'rpx'}">
+				<view class="flex-1 flex align-center" hover-class="bg-light" v-for="(item,index) in chatOptionList" :key="index" @click="handleChatPopEvent($event,item.event)">
+					<text class="font-md pl-3">{{item.name}}</text>  
+				</view>
+			</view>
 		</free-popup>
 	</view>
 </template>
@@ -25,37 +33,108 @@
 			freeMediaList,
 			freePopup
 		},
+		computed: {
+			getChatPopHeight() {
+				let H = 100
+				return this.chatOptionList.length * H 
+			}
+		},
 		data() {
 			return {
+				pageList: {
+					chatDetail: '/pages/chat/chat'
+				},
 				msgCount: 10,
 				statusBarHeight: 0,
+				chatCheckedIndex: 0,
+				chatOptionList: [
+					{
+						name: '置顶消息',
+						event: 'msgTop'
+					},
+					{
+						name: '删除该聊天',
+						event: 'delChat'
+					},
+				],
 				chatList: [{
 						avatar: '/static/images/demo/demo6.jpg',
 						nickname: 'jack',
 						update_time: 1632347137,
 						data: '来消息了225552',
-						noreadnum: 1
+						noreadnum: 1,
+						isTop: false
 					},
 					{
 						avatar: '/static/images/demo/demo6.jpg',
 						nickname: 'jack',
 						update_time: 1632347137,
 						data: '来消息了',
-						noreadnum: 0
+						noreadnum: 0,
+						isTop: false
+					},
+					{
+						avatar: '/static/images/demo/demo6.jpg',
+						nickname: 'jack',
+						update_time: 1632347137,
+						data: '来消息了置顶',
+						noreadnum: 0,
+						isTop: true
+					},
+					{
+						avatar: '/static/images/demo/demo6.jpg',
+						nickname: 'jack',
+						update_time: 1632347137,
+						data: '来消息了', 
+						noreadnum: 0,
+						isTop: false
 					},
 					{
 						avatar: '/static/images/demo/demo6.jpg',
 						nickname: 'jack',
 						update_time: 1632347137,
 						data: '来消息了',
-						noreadnum: 0
+						noreadnum: 0,
+						isTop: false
 					},
 					{
 						avatar: '/static/images/demo/demo6.jpg',
 						nickname: 'jack',
 						update_time: 1632347137,
 						data: '来消息了',
-						noreadnum: 0
+						noreadnum: 0,
+						isTop: false
+					},{
+						avatar: '/static/images/demo/demo6.jpg',
+						nickname: 'jack',
+						update_time: 1632347137,
+						data: '来消息了',
+						noreadnum: 0,
+						isTop: false
+					},
+					{
+						avatar: '/static/images/demo/demo6.jpg',
+						nickname: 'jack',
+						update_time: 1632347137,
+						data: '来消息了',
+						noreadnum: 0,
+						isTop: false
+					},
+					{
+						avatar: '/static/images/demo/demo6.jpg',
+						nickname: 'jack',
+						update_time: 1632347137,
+						data: '来消息了',
+						noreadnum: 0,
+						isTop: false
+					},
+					{
+						avatar: '/static/images/demo/demo6.jpg',
+						nickname: 'jack',
+						update_time: 1632347137,
+						data: '来消息了',
+						noreadnum: 0,
+						isTop: false
 					}
 				]
 			}
@@ -67,15 +146,49 @@
 			// #endif
 		}, 
 		methods: {
+			jumpTo(path) {
+				console.log('跳页面...');
+				uni.navigateTo({
+					url: path
+				})
+			},
+			handleChatPopEvent(event,eventName) {
+				event.stopPropagation()
+				console.log(eventName,'eventName');
+				switch (eventName){
+					case 'msgTop':
+						this.toggleChatTop()
+						break;
+					case 'delChat':
+						this.delChat()
+						break;
+					default:
+						break;
+				}
+			},
+			delChat() {
+				this.chatList.splice(this.chatCheckedIndex,1)
+				this.handHidePopup()
+			},
+			toggleChatTop() {
+				this.chatList[this.chatCheckedIndex].isTop = !this.chatList[this.chatCheckedIndex].isTop
+				this.handHidePopup()
+			},
 			handSearch() {
-				this.$refs.popup.showPopup(100,100)
+			
 			},
-			handExtend() {
-				this.$refs.popup.showPopup()
-			},
+			handExtend(e) {
+				console.log(e,'extend...');
+				this.$refs.navBar.showPopup()
+			},  
 			handleLongPress(e) {
-				console.log(e,'按压坐标..');
+				console.log(e,'长按的信息');
+				this.chatOptionList[0].name = this.chatList[e.index].isTop ? '取消置顶' : '置顶消息'
+				this.chatCheckedIndex = e.index
 				this.$refs.popup.showPopup(e.x,e.y)
+			},
+			handHidePopup() {
+				this.$refs.popup.hidePopup()
 			}
 		}
 	}

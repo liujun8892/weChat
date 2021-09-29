@@ -43,3 +43,8 @@ button {
   margin: 0;
 }
 
+
+.bg-pink.data-v-856bc432 {
+	background-color: pink !important;
+}
+

@@ -1,0 +1,1 @@
+<view class="flex bg-white  align-stretch" hover-class="bg-pink"><view class="flex px-3 py-2 align-center"><image style="width:75rpx;height:75rpx;" src="{{item.cover}}" mode="widthFix"></image></view><view class="flex-1 border-bottom text-left justify-center"><text class="font-md text-dark">{{item.name}}</text></view></view>

@@ -1,1 +1,1 @@
-<view></view>
+<view><free-nav-bar class="vue-ref" vue-id="a0a95ae2-1" title="发现" data-ref="navBar" data-event-opts="{{[['^search',[['handSearch']]],['^extend',[['handExtend']]]]}}" bind:search="__e" bind:extend="__e" bind:__l="__l"></free-nav-bar><block wx:for="{{findList}}" wx:for-item="item" wx:for-index="index" wx:key="index"><block><free-find-list vue-id="{{'a0a95ae2-2-'+index}}" item="{{item}}" bind:__l="__l"></free-find-list><block wx:if="{{item.isDivider}}"><free-divider vue-id="{{'a0a95ae2-3-'+index}}" bind:__l="__l"></free-divider></block></block></block></view>

@@ -188,6 +188,14 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 
 
 
+
+
+
+
+
+
+
+
 {
   components: {
     freeNavBar: freeNavBar,
@@ -195,37 +203,105 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
     freeMediaList: freeMediaList,
     freePopup: freePopup },
 
+  computed: {
+    getChatPopHeight: function getChatPopHeight() {
+      var H = 100;
+      return this.chatOptionList.length * H;
+    } },
+
   data: function data() {
     return {
       msgCount: 10,
       statusBarHeight: 0,
+      chatCheckedIndex: 0,
+      chatOptionList: [
+      {
+        name: '置顶消息',
+        event: 'msgTop' },
+
+      {
+        name: '删除该聊天',
+        event: 'delChat' }],
+
+
       chatList: [{
         avatar: '/static/images/demo/demo6.jpg',
         nickname: 'jack',
         update_time: 1632347137,
         data: '来消息了225552',
-        noreadnum: 1 },
+        noreadnum: 1,
+        isTop: false },
 
       {
         avatar: '/static/images/demo/demo6.jpg',
         nickname: 'jack',
         update_time: 1632347137,
         data: '来消息了',
-        noreadnum: 0 },
+        noreadnum: 0,
+        isTop: false },
+
+      {
+        avatar: '/static/images/demo/demo6.jpg',
+        nickname: 'jack',
+        update_time: 1632347137,
+        data: '来消息了置顶',
+        noreadnum: 0,
+        isTop: true },
 
       {
         avatar: '/static/images/demo/demo6.jpg',
         nickname: 'jack',
         update_time: 1632347137,
         data: '来消息了',
-        noreadnum: 0 },
+        noreadnum: 0,
+        isTop: false },
 
       {
         avatar: '/static/images/demo/demo6.jpg',
         nickname: 'jack',
         update_time: 1632347137,
         data: '来消息了',
-        noreadnum: 0 }] };
+        noreadnum: 0,
+        isTop: false },
+
+      {
+        avatar: '/static/images/demo/demo6.jpg',
+        nickname: 'jack',
+        update_time: 1632347137,
+        data: '来消息了',
+        noreadnum: 0,
+        isTop: false },
+      {
+        avatar: '/static/images/demo/demo6.jpg',
+        nickname: 'jack',
+        update_time: 1632347137,
+        data: '来消息了',
+        noreadnum: 0,
+        isTop: false },
+
+      {
+        avatar: '/static/images/demo/demo6.jpg',
+        nickname: 'jack',
+        update_time: 1632347137,
+        data: '来消息了',
+        noreadnum: 0,
+        isTop: false },
+
+      {
+        avatar: '/static/images/demo/demo6.jpg',
+        nickname: 'jack',
+        update_time: 1632347137,
+        data: '来消息了',
+        noreadnum: 0,
+        isTop: false },
+
+      {
+        avatar: '/static/images/demo/demo6.jpg',
+        nickname: 'jack',
+        update_time: 1632347137,
+        data: '来消息了',
+        noreadnum: 0,
+        isTop: false }] };
 
 
 
@@ -237,15 +313,43 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 
   },
   methods: {
-    handSearch: function handSearch() {
-      this.$refs.popup.showPopup(100, 100);
+    handleChatPopEvent: function handleChatPopEvent(event, eventName) {
+      event.stopPropagation();
+      console.log(eventName, 'eventName');
+      switch (eventName) {
+        case 'msgTop':
+          this.toggleChatTop();
+          break;
+        case 'delChat':
+          this.delChat();
+          break;
+        default:
+          break;}
+
     },
-    handExtend: function handExtend() {
-      this.$refs.popup.showPopup();
+    delChat: function delChat() {
+      this.chatList.splice(this.chatCheckedIndex, 1);
+      this.handHidePopup();
+    },
+    toggleChatTop: function toggleChatTop() {
+      this.chatList[this.chatCheckedIndex].isTop = !this.chatList[this.chatCheckedIndex].isTop;
+      this.handHidePopup();
+    },
+    handSearch: function handSearch() {
+
+    },
+    handExtend: function handExtend(e) {
+      console.log(e, 'extend...');
+      this.$refs.navBar.showPopup();
     },
     handleLongPress: function handleLongPress(e) {
-      console.log(e, '按压坐标..');
+      console.log(e, '长按的信息');
+      this.chatOptionList[0].name = this.chatList[e.index].isTop ? '取消置顶' : '置顶消息';
+      this.chatCheckedIndex = e.index;
       this.$refs.popup.showPopup(e.x, e.y);
+    },
+    handHidePopup: function handHidePopup() {
+      this.$refs.popup.hidePopup();
     } } };exports.default = _default;
 
 /***/ }),

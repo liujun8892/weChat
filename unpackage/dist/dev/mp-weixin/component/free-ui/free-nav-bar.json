@@ -1,6 +1,7 @@
 {
   "component": true,
   "usingComponents": {
-    "free-icon-button": "/component/free-ui/free-icon-button"
+    "free-icon-button": "/component/free-ui/free-icon-button",
+    "free-popup": "/component/free-ui/free-popup"
   }
 }

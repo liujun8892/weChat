@@ -143,7 +143,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 
 
 var _freeBase = _interopRequireDefault(__webpack_require__(/*! @/common/mixin/free-base.js */ 58));
-var _time = _interopRequireDefault(__webpack_require__(/*! @/common/free-lib/time.js */ 59));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}var freeAvatar = function freeAvatar() {__webpack_require__.e(/*! require.ensure | component/free-ui/free-avatar */ "component/free-ui/free-avatar").then((function () {return resolve(__webpack_require__(/*! @/component/free-ui/free-avatar.vue */ 65));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var freeBadge = function freeBadge() {__webpack_require__.e(/*! require.ensure | component/free-ui/free-badge */ "component/free-ui/free-badge").then((function () {return resolve(__webpack_require__(/*! @/component/free-ui/free-badge.vue */ 70));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default =
+var _time = _interopRequireDefault(__webpack_require__(/*! @/common/free-lib/time.js */ 59));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}var freeAvatar = function freeAvatar() {__webpack_require__.e(/*! require.ensure | component/free-ui/free-avatar */ "component/free-ui/free-avatar").then((function () {return resolve(__webpack_require__(/*! @/component/free-ui/free-avatar.vue */ 67));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var freeBadge = function freeBadge() {__webpack_require__.e(/*! require.ensure | component/free-ui/free-badge */ "component/free-ui/free-badge").then((function () {return resolve(__webpack_require__(/*! @/component/free-ui/free-badge.vue */ 72));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default =
 {
   mixins: [_freeBase.default],
   components: {
@@ -164,7 +164,8 @@ var _time = _interopRequireDefault(__webpack_require__(/*! @/common/free-lib/tim
         y = e.touches[0].pageY;
       }
       console.log(x, y, '坐标....');
-      this.$emit('long', { x: x, y: y });
+      console.log(this.index, 'index...');
+      this.$emit('long', { x: x, y: y, index: this.index });
     } } };exports.default = _default;
 
 /***/ })

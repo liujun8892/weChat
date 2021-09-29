@@ -1,5 +1,9 @@
 {
   "navigationBarTitleText": "",
   "enablePullDownRefresh": false,
-  "usingComponents": {}
+  "usingComponents": {
+    "free-nav-bar": "/component/free-ui/free-nav-bar",
+    "free-find-list": "/component/free-ui/free-find-list",
+    "free-divider": "/component/free-ui/free-divider"
+  }
 }

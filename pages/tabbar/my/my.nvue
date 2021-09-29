@@ -1,14 +1,74 @@
 <template>
 	<view>
-		
+		<!-- 导航栏 -->
+		<free-nav-bar :bgWhite="true">
+			<free-icon-button slot="rightIcon" :icon="'\ue6ed'"  @click="search"></free-icon-button>
+		</free-nav-bar>
+		<!-- 个人信息 -->
+		<free-my-list :cover="userInfo.cover" :userName="userInfo.userName" :userNumber="userInfo.userNumber"></free-my-list>
+		<!-- 功能列表 -->
+		<free-divider></free-divider>
+		<block v-for="(item,index) in myList" :key="index">
+			<free-find-list :item="item"></free-find-list>
+			<free-divider v-if="item.isDivider"></free-divider>
+		</block>
 	</view>
 </template>
 
 <script>
+	import freeNavBar from '@/component/free-ui/free-nav-bar.vue'
+	import freeIconButton from '@/component/free-ui/free-icon-button.vue'
+	import freeMyList from '@/component/free-ui/free-my-list.vue'
+	import freeFindList from '@/component/free-ui/free-find-list.vue'
+	import freeDivider from '@/component/free-ui/free-divider.vue'
 	export default {
+		components: {
+			freeNavBar,
+			freeIconButton,
+			freeMyList,
+			freeFindList,
+			freeDivider
+		},
 		data() {
 			return {
-				
+				userInfo: {
+					id: '',
+					cover: '/static/images/demo/demo6.jpg',
+					userName: '刘易阳',
+					userNumber: 'sunshine'
+				},
+				// 发现列表
+				myList: [{
+						icon: '\ue66c',
+						name: '支付',
+						avatar: '',
+						isDivider: true
+					},
+					{
+						icon: '\uea2d',
+						name: '收藏',
+						avatar: '',
+						isDivider: false
+					},
+					{
+						icon: '\ue608',
+						name: '相册',
+						avatar: '',
+						isDivider: false
+					},
+					{
+						icon: '\ue605',
+						name: '表情',
+						avatar: '',
+						isDivider: true
+					},
+					{
+						icon: '\ue612',
+						name: '设置',
+						avatar: '',
+						isDivider: false
+					}, 
+				],
 			}
 		},
 		methods: {

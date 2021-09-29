@@ -1,0 +1,57 @@
+<template>
+	<view>
+		<!-- 导航栏 -->
+		<free-nav-bar title="元宇宙世界" msgCount="8" :showBack="true" ref='navBar' :isFixed="true">
+			<free-icon-button :icon="'\ue6fd'"  slot="rightIcon"></free-icon-button>
+		</free-nav-bar>
+		<!-- 聊天区域 -->
+		<!-- :style="`top: ${$refs.navBar.getPlaceHolderHeight()}px;`" -->
+		<scroll-view scroll-y="true" class="position-fixed left-0 right-0 bg-light px-3" style="bottom: 105rpx;" :style="`top: ${contentFixedHeight}px;`">
+			<view class="flex align-start justify-start">
+				<free-avatar src="/static/images/demo/demo6.jpg" size="70"></free-avatar>
+				<text class="p-2 rounded bg-white ml-3 font-md" style="max-width: 500rpx;">213213213213213213213213213213213213213123123213213213213213213213</text>
+			</view>
+		</scroll-view>
+		
+		<!-- 底部聊天输入框 -->
+		<view class="position-fixed left-0 right-0 bottom-0 flex align-center border-top" style="background-color: #f7f7f6;height: 105rpx;">
+			<free-icon-button :icon="'\ue606'"  slot="rightIcon"></free-icon-button>
+			<view class="flex-1">
+				<textarea fixed class="p-2 bg-white rounded font-md" style="height: 75rpx;"></textarea>
+			</view>
+			<free-icon-button :icon="'\ue605'"  slot="rightIcon"></free-icon-button>
+			<free-icon-button :icon="'\ue603'"  slot="rightIcon"></free-icon-button>
+		</view>
+	</view>
+</template>
+
+<script>
+	import freeNavBar from '@/component/free-ui/free-nav-bar.vue'
+	import freeIconButton from '@/component/free-ui/free-icon-button.vue'
+	import freeAvatar from '@/component/free-ui/free-avatar.vue'
+	export default {
+		components: {
+			freeNavBar,
+			freeIconButton,
+			freeAvatar
+		},
+		computed: {
+			
+		},
+		data() {
+			return {
+				contentFixedHeight: ''
+			}
+		},
+		mounted() {
+			this.contentFixedHeight = this.$refs.navBar.getPlaceHolderHeight()
+		},
+		methods: {
+			
+		}
+	}
+</script>
+
+<style>
+
+</style>
