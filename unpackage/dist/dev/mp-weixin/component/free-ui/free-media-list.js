@@ -157,6 +157,14 @@ var _time = _interopRequireDefault(__webpack_require__(/*! @/common/free-lib/tim
   methods: {
     handleLongPress: function handleLongPress(e) {
       console.log(e, '7777');
+      var x = 0;
+      var y = 0;
+      if (e.touches && Array.isArray(e.touches) && e.touches.length > 0) {
+        x = e.touches[0].pageX;
+        y = e.touches[0].pageY;
+      }
+      console.log(x, y, '坐标....');
+      this.$emit('long', { x: x, y: y });
     } } };exports.default = _default;
 
 /***/ })

@@ -135,17 +135,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var freeNavBar = function freeNavBar() {__webpack_require__.e(/*! require.ensure | component/free-ui/free-nav-bar */ "component/free-ui/free-nav-bar").then((function () {return resolve(__webpack_require__(/*! @/component/free-ui/free-nav-bar.vue */ 43));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var freeIconButton = function freeIconButton() {__webpack_require__.e(/*! require.ensure | component/free-ui/free-icon-button */ "component/free-ui/free-icon-button").then((function () {return resolve(__webpack_require__(/*! @/component/free-ui/free-icon-button.vue */ 48));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var freeMediaList = function freeMediaList() {Promise.all(/*! require.ensure | component/free-ui/free-media-list */[__webpack_require__.e("common/vendor"), __webpack_require__.e("component/free-ui/free-media-list")]).then((function () {return resolve(__webpack_require__(/*! @/component/free-ui/free-media-list.vue */ 72));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default =
-
-
-
-
-
-
-
-
-
-
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var freeNavBar = function freeNavBar() {__webpack_require__.e(/*! require.ensure | component/free-ui/free-nav-bar */ "component/free-ui/free-nav-bar").then((function () {return resolve(__webpack_require__(/*! @/component/free-ui/free-nav-bar.vue */ 43));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var freeIconButton = function freeIconButton() {__webpack_require__.e(/*! require.ensure | component/free-ui/free-icon-button */ "component/free-ui/free-icon-button").then((function () {return resolve(__webpack_require__(/*! @/component/free-ui/free-icon-button.vue */ 48));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var freeMediaList = function freeMediaList() {Promise.all(/*! require.ensure | component/free-ui/free-media-list */[__webpack_require__.e("common/vendor"), __webpack_require__.e("component/free-ui/free-media-list")]).then((function () {return resolve(__webpack_require__(/*! @/component/free-ui/free-media-list.vue */ 72));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var freePopup = function freePopup() {__webpack_require__.e(/*! require.ensure | component/free-ui/free-popup */ "component/free-ui/free-popup").then((function () {return resolve(__webpack_require__(/*! @/component/free-ui/free-popup.vue */ 78));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default =
 
 
 
@@ -202,17 +192,18 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
   components: {
     freeNavBar: freeNavBar,
     freeIconButton: freeIconButton,
-    freeMediaList: freeMediaList },
+    freeMediaList: freeMediaList,
+    freePopup: freePopup },
 
   data: function data() {
     return {
-      title: '微信(10)',
+      msgCount: 10,
       statusBarHeight: 0,
       chatList: [{
         avatar: '/static/images/demo/demo6.jpg',
         nickname: 'jack',
         update_time: 1632347137,
-        data: '来消息了',
+        data: '来消息了225552',
         noreadnum: 1 },
 
       {
@@ -245,7 +236,17 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 
 
   },
-  methods: {} };exports.default = _default;
+  methods: {
+    handSearch: function handSearch() {
+      this.$refs.popup.showPopup(100, 100);
+    },
+    handExtend: function handExtend() {
+      this.$refs.popup.showPopup();
+    },
+    handleLongPress: function handleLongPress(e) {
+      console.log(e, '按压坐标..');
+      this.$refs.popup.showPopup(e.x, e.y);
+    } } };exports.default = _default;
 
 /***/ }),
 /* 17 */

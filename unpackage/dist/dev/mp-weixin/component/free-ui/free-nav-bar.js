@@ -139,6 +139,11 @@ __webpack_require__.r(__webpack_exports__);
   components: {
     freeIconButton: freeIconButton },
 
+  computed: {
+    getMsgText: function getMsgText() {
+      return this.msgCount > 0 ? "\u5FAE\u4FE1(".concat(this.msgCount, ")") : "\u5FAE\u4FE1";
+    } },
+
   props: {
     isTitleShow: {
       type: Boolean,
@@ -150,7 +155,11 @@ __webpack_require__.r(__webpack_exports__);
 
     isFixed: {
       type: Boolean,
-      default: true } },
+      default: true },
+
+    msgCount: {
+      type: Number,
+      default: 0 } },
 
 
   data: function data() {
@@ -165,7 +174,14 @@ __webpack_require__.r(__webpack_exports__);
 
 
     this.placeHolderHeight = this.statusBarHeight + uni.upx2px(90);
-  } };exports.default = _default;
+  },
+  methods: {
+    search: function search() {
+      this.$emit('search');
+    },
+    extend: function extend() {
+      this.$emit('extend');
+    } } };exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ })

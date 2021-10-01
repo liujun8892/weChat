@@ -2,6 +2,7 @@
   "usingComponents": {
     "free-nav-bar": "/component/free-ui/free-nav-bar",
     "free-icon-button": "/component/free-ui/free-icon-button",
-    "free-media-list": "/component/free-ui/free-media-list"
+    "free-media-list": "/component/free-ui/free-media-list",
+    "free-popup": "/component/free-ui/free-popup"
   }
 }
