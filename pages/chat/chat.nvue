@@ -2,56 +2,414 @@
 	<view>
 		<!-- 导航栏 -->
 		<free-nav-bar title="元宇宙世界" msgCount="8" :showBack="true" ref='navBar' :isFixed="true">
-			<free-icon-button :icon="'\ue6fd'"  slot="rightIcon"></free-icon-button>
+			<free-icon-button :icon="'\ue6fd'" slot="rightIcon"></free-icon-button>
 		</free-nav-bar>
 		<!-- 聊天区域 -->
 		<!-- :style="`top: ${$refs.navBar.getPlaceHolderHeight()}px;`" -->
-		<scroll-view scroll-y="true" class="position-fixed left-0 right-0 bg-light px-3" style="bottom: 105rpx;" :style="`top: ${contentFixedHeight}px;`">
-			<view class="flex align-start justify-start">
-				<free-avatar src="/static/images/demo/demo6.jpg" size="70"></free-avatar>
-				<text class="p-2 rounded bg-white ml-3 font-md" style="max-width: 500rpx;">213213213213213213213213213213213213213123123213213213213213213213</text>
-			</view>
+		<scroll-view scroll-y="true" class="position-fixed left-0 right-0 bg-light px-3"
+			:style="{top: contentFixedHeight + 'px',bottom: getChatContentHeight + 'px'}" @click="handChatClick">
+			<block v-for="(item, index) in chatList">
+				<free-chat-item :item="item" :index="index" :key="index"
+					:proTime="index === 0 ? 0 : chatList[index-1].create_time" @long="handleLongPress"
+					ref="freeChatItem"></free-chat-item>
+			</block>
 		</scroll-view>
-		
+
 		<!-- 底部聊天输入框 -->
-		<view class="position-fixed left-0 right-0 bottom-0 flex align-center border-top" style="background-color: #f7f7f6;height: 105rpx;">
-			<free-icon-button :icon="'\ue606'"  slot="rightIcon"></free-icon-button>
+		<view class="position-fixed left-0 right-0 flex align-center border-top"
+			style="background-color: #f7f7f6;height: 105rpx;" :style="{bottom: keybordHeight + 'px'}">
+			<free-icon-button :icon="'\ue606'" slot="rightIcon"></free-icon-button>
 			<view class="flex-1">
-				<textarea fixed class="p-2 bg-white rounded font-md" style="height: 75rpx;"></textarea>
+				<textarea fixed class="p-2 bg-white rounded font-md" style="height: 75rpx;" :adjust-position="false"
+					v-model="chatMsg" @focus="handleChatFocus" @blur="handleChatBlur"></textarea>
 			</view>
-			<free-icon-button :icon="'\ue605'"  slot="rightIcon"></free-icon-button>
-			<free-icon-button :icon="'\ue603'"  slot="rightIcon"></free-icon-button>
+			<free-icon-button :icon="'\ue605'" slot="rightIcon" @click="openAction('emotion')"></free-icon-button>
+			<free-icon-button :icon="'\ue603'" slot="rightIcon" v-if="!chatMsg || chatMsg == ''"
+				@click="openAction('action')"></free-icon-button>
+			<view class="main-bg-color rounded px-2 py-1 mr-2" @click="sendMsg('text')" v-else>
+				<text class="font text-white">发送</text>
+			</view>
 		</view>
+
+		<!-- 弹出操作聊天组件组件 -->
+		<free-popup ref="popup" :contentWidth="240" :contentHeight="getChatPopHeight" :maskShow="false"
+			:securityBottomHeight='105'>
+			<view class="flex flex-column" style="width: 240rpx;" :style="{height: getChatPopHeight + 'rpx'}">
+				<view class="flex-1 flex align-center" hover-class="bg-light"
+					v-for="(item,index) in animateChatOptionList" :key="index"
+					@click="handleChatPopEvent($event,item.event)">
+					<text class="font-md pl-3">{{item.name}}</text>
+				</view>
+			</view>
+		</free-popup>
+
+		<free-popup ref="actionPopup" :positionBottom="true" :maskShow="false" @hideBottomPop="hideBottomPop"
+			hideOrigin="center bottom" :defaultMask="false">
+			<view class="border-top border-light-secondary" style="height: 580rpx;background-color: #f7f7f6">
+				<swiper :indicator-dots="true" style="height: 510rpx;">
+					<swiper-item class="row" v-for="(item, index) in emotionOrActionData" :key="index">
+						<view class="col-3 flex flex-column align-center justify-center" style="height: 255rpx;"
+							v-for="(item2, index2) in item" :key="index2" @click="handleAction($event,item2)">
+							<image :src="item2.icon" mode="widthFix" style="width: 100rpx;height: 100rpx;"></image>
+							<!-- <image src="../.." mode="widthFix" style="width: 100rpx;height: 100rpx;"></image> -->
+							<text class="font text-light-muted mt-2">{{item2.name}}</text>
+						</view>
+					</swiper-item>
+				</swiper>
+			</view>
+		</free-popup>
 	</view>
 </template>
 
 <script>
 	import freeNavBar from '@/component/free-ui/free-nav-bar.vue'
 	import freeIconButton from '@/component/free-ui/free-icon-button.vue'
-	import freeAvatar from '@/component/free-ui/free-avatar.vue'
+	import freeChatItem from '@/component/chat/free-chat-item.vue'
+	import freePopup from '@/component/free-ui/free-popup.vue'
+	// #ifdef APP-PLUS-NVUE
+	let domModule = weex.requireModule('dom')
+	// #endif
 	export default {
 		components: {
 			freeNavBar,
 			freeIconButton,
-			freeAvatar
+			freeChatItem,
+			freePopup
 		},
 		computed: {
-			
+			getChatPopHeight() {
+				let H = 100
+				return this.animateChatOptionList.length > 0 ? this.animateChatOptionList.length * H : this.chatOptionList
+					.length * H
+			},
+			getChatContentHeight() {
+				return this.keybordHeight + uni.upx2px(105)
+			}
 		},
 		data() {
 			return {
-				contentFixedHeight: ''
+				chatMsg: '',
+				keybordHeight: 0,
+				chatMode: '',
+				emotionOrActionData: [],
+				emotionData: [],
+				actionData: [
+					[{
+							name: '相册',
+							icon: '/static/images/extends/pic.png',
+							event: 'album'
+						},
+						{
+							name: '拍摄',
+							icon: '/static/images/extends/video.png',
+							event: 'shoot'
+						},
+						{
+							name: '收藏',
+							icon: '/static/images/extends/shoucan.png',
+							event: 'fav'
+						},
+						{
+							name: '名片',
+							icon: '/static/images/extends/man.png',
+							event: 'card'
+						},
+						{
+							name: '语音通话',
+							icon: '/static/images/extends/phone.png',
+							event: 'phone'
+						},
+						{
+							name: '位置',
+							icon: '/static/images/extends/path.png',
+							event: 'position'
+						},
+					],
+				],
+				contentFixedHeight: '',
+				chatCheckedIndex: '',
+				animateChatOptionList: [],
+				chatOptionList: [{
+						name: '复制',
+						event: 'copy'
+					},
+					{
+						name: '发送给朋友',
+						event: 'sendFriend'
+					}, {
+						name: '收藏',
+						event: 'fav'
+					}, {
+						name: '删除',
+						event: 'del'
+					}, {
+						name: '多选',
+						event: 'mulSelected'
+					}, {
+						name: '撤回',
+						event: 'feedback'
+					},
+				],
+				chatList: [{
+						id: 0,
+						nickname: '赵子龙',
+						avatar: '/static/images/demo/demo6.jpg',
+						type: 'text',
+						data: '213213213213213213213213213213213213213123123213213213213213213213',
+						create_time: 1432133464,
+						isRemove: false,
+						isAnimation: false,
+					}, {
+						id: 1,
+						nickname: '赵子龙',
+						avatar: '/static/images/demo/demo6.jpg',
+						type: 'text',
+						data: '4567485438545745734957489574389574935743975438957398475938753874789239498',
+						create_time: 1632133464,
+						isRemove: true,
+						isAnimation: false
+					},
+					{
+						id: 1,
+						nickname: '赵子龙',
+						avatar: '/static/images/demo/demo6.jpg',
+						type: 'text',
+						data: '4567485438545745734957489574389574935743975438957398475938753874789239498',
+						create_time: 1632133464,
+						isRemove: false,
+						isAnimation: true,
+					},
+					{
+						id: 1,
+						nickname: '赵子龙',
+						avatar: '/static/images/demo/demo6.jpg',
+						type: 'text',
+						data: '4567485438545745734957489574389574935743975438957398475938753874789239498',
+						create_time: 1632133464,
+						isRemove: false,
+						isAnimation: true
+					}, {
+						id: 1,
+						nickname: '赵子龙',
+						avatar: '/static/images/demo/demo6.jpg',
+						type: 'text',
+						data: '4567485438545745734957489574389574935743975438957398475938753874789239498',
+						create_time: 1632133464,
+						isRemove: false,
+						isAnimation: true
+					}, {
+						id: 1,
+						nickname: '赵子龙',
+						avatar: '/static/images/demo/demo6.jpg',
+						type: 'text',
+						data: '4567485438545745734957489574389574935743975438957398475938753874789239498',
+						create_time: 1632133464,
+						isRemove: false,
+						isAnimation: true
+					}, {
+						id: 1,
+						nickname: '赵子龙',
+						avatar: '/static/images/demo/demo6.jpg',
+						type: 'text',
+						data: '4567485438545745734957489574389574935743975438957398475938753874789239498',
+						create_time: 1632133464,
+						isRemove: false,
+						isAnimation: true
+					},
+				]
 			}
+		},
+		created() {
+			this.initEmotionData()
 		},
 		mounted() {
 			this.contentFixedHeight = this.$refs.navBar.getPlaceHolderHeight()
+			uni.onKeyboardHeightChange(res => {
+				setTimeout(() => {
+					if (this.chatMode == 'text' || this.chatMode == '') {
+						this.keybordHeight = res.height
+						if (this.keybordHeight > 0) {
+							setTimeout(() => {
+								this.keybordHeight = res.height
+								this.pageToBottom()
+							}, 50)
+						}
+					}
+				}, 50)
+			})
 		},
 		methods: {
-			
+			// 初始化表情包
+			initEmotionData() {
+				let totalEmotion = 20
+				let totalPage = Math.ceil(20 / 8)
+				let arr = []
+				for (let i = 0; i < totalPage; i++) {
+					arr = []
+					for (let j = 0; j < 8; j++) {
+						let currentEmotionNumber = i * 8 + j
+						if (currentEmotionNumber >= 20) {
+							continue
+						}
+						let emotion = {
+							name: '表情' + (currentEmotionNumber + 1),
+							icon: `/static/images/emoticon/5497/${currentEmotionNumber}.gif`,
+							event: 'emotion'
+						}
+						arr.push(emotion)
+					}
+					this.emotionData.push(arr)
+				}
+			},
+			// 点击聊天页面
+			handChatClick() {
+				console.log('点击聊天页面');
+				if (this.chatMode == 'action' || this.chatMode == 'emotion') {
+					this.$refs.actionPopup.hidePopup()
+				} else if (this.chatMode == 'text') {
+					uni.hideKeyboard()
+				}
+			},
+			// 失去焦点
+			handleChatBlur() {
+				// this.chatMode = ''
+				
+			},
+			// 输入框聚焦
+			handleChatFocus() {
+				if (this.chatMode == 'action') {
+					this.$refs.actionPopup.hidePopup()
+				}
+				this.chatMode = 'text'
+			},
+			// 操作选项。。
+			handleAction(e, item) {
+				e.stopPropagation()
+				if(item.event == 'emotion') {
+					this.sendMsg('emotion',item)
+				}else if(item.event == 'album') {
+					uni.chooseImage({
+						count:9,
+						success: (res) => {
+							res.tempFilePaths.forEach(v => {
+								this.sendMsg('image',v)
+							})
+						}
+					})
+				}
+			},
+			// 隐藏弹框
+			hideBottomPop() {
+				console.log('子组件消息隐藏。。。');
+				this.keybordHeight = 0
+			},
+			// 打开操作菜单
+			openAction(type) { // text action emotion
+				if (this.chatMode === 'text') {
+					// this.chatMode = 'action'
+					uni.hideKeyboard()
+				}
+				this.chatMode = type
+				if (type == 'action') {
+					this.emotionOrActionData = this.actionData
+				} else if (type == 'emotion') {
+					this.emotionOrActionData = this.emotionData
+				}
+
+				if (!this.$refs.actionPopup.getPopupStatus()) {
+					this.keybordHeight = uni.upx2px(580)
+					this.$refs.actionPopup.showPopup(0, 0)
+					setTimeout(() => {
+						this.pageToBottom()
+					}, 50)
+				}
+			},
+			// 发送消息
+			sendMsg(type,item) {
+				let msg = {
+					id: 1,
+					nickname: '赵子龙',
+					avatar: '/static/images/demo/demo6.jpg',
+					type: type,
+					data: '',
+					create_time: new Date().getTime(),
+					isRemove: false,
+					isAnimation: true
+				}
+				switch (type) {
+					case 'text':
+						msg.data = this.chatMsg
+						break;
+					case 'emotion':
+						msg.data = item.icon
+						break;
+					case 'image':
+						msg.data = item
+						break;
+					default:
+						break;
+				}
+				if (msg.data) {
+					this.chatList.push(msg)
+					setTimeout(() => {
+						this.pageToBottom()
+						if(type == 'text') {
+							this.chatMsg = ''
+						}
+					}, 50)
+				}
+			},
+			// 点击输入款的时候页面滚动都底端
+			pageToBottom() {
+				// #ifdef APP-PLUS-NVUE
+				let chatDoms = this.$refs.freeChatItem
+				if (this.chatList.length > 0) {
+					let lastChatDom = chatDoms[this.chatList.length - 1]
+					console.log(lastChatDom, '1111');
+					domModule.scrollToElement(lastChatDom, {})
+				}
+				// #endif	
+			},
+			handleLongPress(e) {
+				console.log(e, '长按的信息');
+				this.chatCheckedIndex = e.index
+				let currentCheckedItem = this.chatList[e.index]
+				this.animateChatOptionList = [...this.chatOptionList]
+				// 不是自己,没有撤回功能
+				console.log(currentCheckedItem, '2222');
+				if (currentCheckedItem.id !== 1) {
+					this.animateChatOptionList = this.animateChatOptionList.filter(v => v.name !== '撤回')
+				}
+				this.$refs.popup.showPopup(e.x, e.y)
+			},
+			handleChatPopEvent(event, eventName) {
+				event.stopPropagation()
+				console.log(eventName, 'eventName');
+				switch (eventName) {
+					case 'msgTop':
+						this.toggleChatTop()
+						break;
+					case 'delChat':
+						this.delChat()
+						break;
+					case 'feedback':
+						this.feedbackMsg()
+						break;
+					default:
+						break;
+				}
+			},
+			// 撤回消息
+			feedbackMsg() {
+				if (this.chatCheckedIndex > -1) {
+					this.chatList[this.chatCheckedIndex].isRemove = true
+				}
+				this.$refs.popup.hidePopup()
+			}
 		}
 	}
 </script>
 
-<style>
+<style lang="scss" scoped>
 
 </style>

@@ -1,11 +1,17 @@
 <template>
-	<view  style="z-index:9999;overflow: hidden; left: 0;right: 0;top: 0;bottom: 0;position: fixed;" v-if="popupShow" @click.stop="handleNoMaskHide">
-		<view style="position: fixed;background-color:rgba(0,0,0,0.5); left: 0;right: 0;top: 0;bottom: 0;" @click="hidePopup" v-if="maskShow"> 
+	<view v-if="popupShow">
+		<view style="z-index:9999;overflow: hidden; left: 0;right: 0;top: 0;bottom: 0;position: fixed;"  @click.stop="handleNoMaskHide" v-if="defaultMask">
+			<view style="position: fixed;background-color:rgba(0,0,0,0.5); left: 0;right: 0;top: 0;bottom: 0;" @click="hidePopup" v-if="maskShow"> 
+			</view>
+			<view :class="getContentClass" style="position: fixed;background-color: #FFFFFF;z-index: 99999;" :style="getContentStyle" ref='popContent'>
+				<slot></slot>
+			</view>
 		</view>
-		<view :class="getContentClass" style="position: fixed;background-color: #FFFFFF;z-index: 99999;" :style="getContentStyle" ref='popContent'>
+		<view :class="getContentClass" style="position: fixed;background-color: #FFFFFF;z-index: 99999;" :style="getContentStyle" ref='popContent' v-else>
 			<slot></slot>
 		</view>
 	</view>
+	
 </template>
 
 <script>
@@ -22,6 +28,10 @@
 			}
 		},
 		props: {
+			defaultMask: {
+				type:Boolean,
+				default:true
+			},
 			maskShow: {
 				type: Boolean,
 				default: true
@@ -41,6 +51,10 @@
 			hideOrigin: {
 				type: String,
 				default: 'left top'
+			},
+			securityBottomHeight: {
+				type: Number,
+				default: 0
 			}
 		},
 		data() {
@@ -53,10 +67,13 @@
 			}
 		},
 		methods:{
+			getPopupStatus() {
+				return this.popupShow
+			},
 			showPopup(x,y) {
 				let systemInfo = uni.getSystemInfoSync()
 				this.maxX = systemInfo.windowWidth - uni.upx2px(this.contentWidth)
-				this.maxY = systemInfo.windowHeight - uni.upx2px(this.contentHeight)
+				this.maxY = systemInfo.windowHeight - uni.upx2px(this.contentHeight) - uni.upx2px(this.securityBottomHeight)
 				this.left =x > this.maxX ? this.maxX : x
 				this.top = y > this.maxY ? this.maxY : y
 				this.popupShow = true
@@ -82,13 +99,13 @@
 				})
 			},
 			hidePopup() {
-				
 				// #ifdef APP-PLUS-NVUE
 				this.hidePopupAnimation()
 				// #endif
 				// #ifndef APP-PLUS-NVUE
 				this.popupShow = false
 				// #endif
+				this.$emit('hideBottomPop')
 			},
 			hidePopupAnimation() {
 				this.$nextTick(()=>{
