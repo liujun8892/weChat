@@ -10,7 +10,7 @@
 			:style="{top: contentFixedHeight + 'px',bottom: getChatContentHeight + 'px'}" @click="handChatClick">
 			<block v-for="(item, index) in chatList">
 				<free-chat-item :item="item" :index="index" :key="index"
-					:proTime="index === 0 ? 0 : chatList[index-1].create_time" @long="handleLongPress"
+					:proTime="index === 0 ? 0 : chatList[index-1].create_time" @long="handleLongPress" @previewImg="handPreviewImg"
 					ref="freeChatItem"></free-chat-item>
 			</block>
 		</scroll-view>
@@ -84,6 +84,11 @@
 			},
 			getChatContentHeight() {
 				return this.keybordHeight + uni.upx2px(105)
+			},
+			// 图片或表情包地址
+			getPreviewUrls() {
+				let arr = this.chatList.filter(v => v.type != 'text')
+				return arr.map(v => v.data)
 			}
 		},
 		data() {
@@ -216,6 +221,36 @@
 						isRemove: false,
 						isAnimation: true
 					},
+					{
+						id: 1,
+						nickname: '赵子龙',
+						avatar: '/static/images/demo/demo6.jpg',
+						type: 'audio',
+						data: '/static/audio/1.mp3',
+						create_time: 1632133464,
+						isRemove: false,
+						isAnimation: true
+					},
+					{
+						id: 1,
+						nickname: '赵子龙',
+						avatar: '/static/images/demo/demo6.jpg',
+						type: 'audio',
+						data: '/static/audio/2.mp3',
+						create_time: 1632133464,
+						isRemove: false,
+						isAnimation: true
+					},
+					{
+						id: 1,
+						nickname: '赵子龙',
+						avatar: '/static/images/demo/demo6.jpg',
+						type: 'audio',
+						data: '/static/audio/3.mp3',
+						create_time: 1632133464,
+						isRemove: false,
+						isAnimation: true
+					},
 				]
 			}
 		},
@@ -239,6 +274,15 @@
 			})
 		},
 		methods: {
+			// 处理图片预览
+			handPreviewImg(url) {
+				console.log(url,'预览图片');
+				console.log(this.getPreviewUrls,'预览的图片..');
+				uni.previewImage({
+					current: url,
+					urls: this.getPreviewUrls
+				})
+			},
 			// 初始化表情包
 			initEmotionData() {
 				let totalEmotion = 20
@@ -263,7 +307,6 @@
 			},
 			// 点击聊天页面
 			handChatClick() {
-				console.log('点击聊天页面');
 				if (this.chatMode == 'action' || this.chatMode == 'emotion') {
 					this.$refs.actionPopup.hidePopup()
 				} else if (this.chatMode == 'text') {

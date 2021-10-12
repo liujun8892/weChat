@@ -12,20 +12,23 @@
 			<!-- 别人 -->
 			<view class="flex align-start justify-start position-relative" :key="index" v-if="!isSelf"
 				@longpress="handleLongPress">
-				<text class="iconfont font-md  position-absolute chat-left-icon text-white" v-if="item.type != 'emotion'">&#xe609;</text>
+				<text class="iconfont font-md  position-absolute chat-left-icon text-white" v-if="item.type == 'text' || item.type == 'audio'">&#xe609;</text>
 				<free-avatar :src="item.avatar" size="70"></free-avatar>
-				<text class="p-2 rounded bg-white ml-3 font-md" style="max-width: 500rpx;">{{item.data}}</text>
-				<text class="p-2 rounded  mr-3 font-md  " style="max-width: 500rpx;" v-if="item.type == 'emotion'">
+				<text class="p-2 rounded bg-white ml-3 font-md" style="max-width: 500rpx;" v-if="item.type == 'text'">{{item.data}}</text>
+				<text class="p-2 rounded  mr-3 font-md bg-chat-item font" style="max-width: 500rpx;" v-if="item.type == 'audio'">4'</text>
+				<text class="p-2 rounded  mr-3 font-md  " style="max-width: 500rpx;" v-if="item.type == 'emotion' || item.type == 'image'" @click="previewImg">
 					<image :src="item.data" mode="widthFix" style="width: 300rpx;height: 300rpx;" lazy-load></image>
 				</text>
 			</view>
 			<!-- 自己 -->
 			<view class="flex align-start justify-end mt-3" :key="index" v-else @longpress="handleLongPress">
-				<text class="iconfont font-md  position-absolute text-chat-item chat-right-icon" v-if="item.type == 'text'">&#xe640;</text>
+				<text class="iconfont font-md  position-absolute text-chat-item chat-right-icon" v-if="item.type == 'text' || item.type == 'audio'">&#xe640;</text>
 				<text class="p-2 rounded  mr-3 font-md bg-chat-item " style="max-width: 500rpx;" v-if="item.type == 'text'">{{item.data}}</text>
-				<text class="p-2 rounded  mr-3 font-md  " style="max-width: 500rpx;" v-else>
-					<image :src="item.data" mode="widthFix" class="rounded" style="width: 300rpx;height: 300rpx;" lazy-load></image>
+				<text class="p-2 rounded  mr-3 font-md bg-chat-item font" style="max-width: 500rpx;" v-if="item.type == 'audio'" @click="audioPlayer">4'</text>
+				<text class="p-2 rounded  mr-3 font-md  " style="max-width: 500rpx;" v-if="item.type == 'emotion' || item.type == 'image'" @click="previewImg">
+					<free-image :src='item.data'></free-image>
 				</text>
+				
 				<free-avatar :src="item.avatar" size="70" ></free-avatar>
 			</view>
 		</template>
@@ -35,12 +38,15 @@
 <script>
 	import freeAvatar from '@/component/free-ui/free-avatar.vue'
 	import $T from "@/common/free-lib/time.js"
+	import freeImage from '@/component/free-ui/free-image.vue'
+	import {mapActions} from 'vuex'
 	// #ifdef APP-PLUS-NVUE
 	let animation = weex.requireModule('animation')
 	// #endif
 	export default {
 		components: {
-			freeAvatar
+			freeAvatar,
+			freeImage
 		},
 		props: {
 			item: {
@@ -67,7 +73,9 @@
 		},
 		data() {
 			return {
-
+				w: '',
+				h: '',
+				innerAudioContext:null,
 			}
 		},
 		mounted() {
@@ -76,8 +84,55 @@
 					this.showRemoveAnimation()
 				}
 			})
+			if(this.item.type === 'audio') {
+				this.$on(this.onAduioEvent)
+				// this.$store.dispatch('$on',(res)=>{console.log(res,'3333');})
+			}
+		},
+		destroyed() {
+			if(this.item.type === 'audio') {
+				// this.$off(this.onAduioEvent)
+				// this.$store.dispatch('$off',this.onAduioEvent)
+				this.$off(this.onAduioEvent)
+			}
+			if(this.innerAudioContext) {
+				this.innerAudioContext.destroy()
+				this.innerAudioContext = null
+			}
 		},
 		methods: {
+			...mapActions(['$on','$emit','$off']),
+			// 监听音频事件
+			onAduioEvent(index) {
+				if(this.innerAudioContext) {
+					if(index !== this.index) {
+						this.innerAudioContext.stop()
+					}
+				}
+				console.log(index,'3333');
+			},
+			// 播放音频
+			audioPlayer() {
+				console.log(this.item.data,'播放音频...');
+				// this.$store.dispatch('$emit',this.index)
+				this.$emit(this.index)
+				if(!this.innerAudioContext){
+					this.innerAudioContext = uni.createInnerAudioContext();
+					this.innerAudioContext.autoplay = true;
+					this.innerAudioContext.src = this.item.data;
+					this.innerAudioContext.play()
+				} else {
+					this.innerAudioContext.stop()
+					// this.innerAudioContext.src = this.item.data;
+					this.innerAudioContext.play()
+				}
+				
+			},
+			// 预览图片
+			previewImg() {
+				console.log(this.item,this.index,'预览');
+				this.$emit('previewImg',this.item.data)
+			},
 			handleLongPress(e) {
 				// console.log(e,'33333');
 				let x = 0
