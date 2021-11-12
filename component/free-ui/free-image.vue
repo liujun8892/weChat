@@ -43,11 +43,19 @@
 				if(height <= maxH) {
 					this.h = height
 					this.w = width > maxW ? maxW : width
+					this.$emit('loaded',{
+						w:this.w,
+						h:this.h
+					})
 					return
 				}
 				this.h = maxH
 				let _w = maxH *  (width / height)
 				this.w = _w > maxW ?maxW : _w
+				this.$emit('loaded',{
+					w:this.w,
+					h:this.h
+				})
 			},
 		}
 	}

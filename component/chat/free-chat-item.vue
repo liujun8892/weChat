@@ -10,26 +10,44 @@
 		</view>
 		<template v-else>
 			<!-- 别人 -->
-			<view class="flex align-start justify-start position-relative" :key="index" v-if="!isSelf"
+			<view class="flex align-start justify-start position-relative mt-3" :key="index" v-if="!isSelf"
 				@longpress="handleLongPress">
 				<text class="iconfont font-md  position-absolute chat-left-icon text-white" v-if="item.type == 'text' || item.type == 'audio'">&#xe609;</text>
-				<free-avatar :src="item.avatar" size="70"></free-avatar>
+				<free-avatar :src="item.avatar" size="70" avatarType="navigate"></free-avatar>
 				<text class="p-2 rounded bg-white ml-3 font-md" style="max-width: 500rpx;" v-if="item.type == 'text'">{{item.data}}</text>
-				<text class="p-2 rounded  mr-3 font-md bg-chat-item font" style="max-width: 500rpx;" v-if="item.type == 'audio'">4'</text>
+				<text class="p-2 rounded bg-white ml-3 font-md flex align-center" style="max-width: 500rpx;" v-if="item.type == 'audio'" @click="audioPlayer">
+					<text :style="audioChatBoxStyle">{{item.options.time}}"</text>
+						<image class="mx-1" style="width: 50rpx;height: 50rpx;" :src="isStop ?'/static/audio/play.gif':  '/static/audio/audio3.png' " mode=""></image>
+				</text>
 				<text class="p-2 rounded  mr-3 font-md  " style="max-width: 500rpx;" v-if="item.type == 'emotion' || item.type == 'image'" @click="previewImg">
 					<image :src="item.data" mode="widthFix" style="width: 300rpx;height: 300rpx;" lazy-load></image>
 				</text>
+				<view class="position-relative rounded" v-if="item.type == 'video'">
+					<free-image :src="item.options.poster" @loaded="handImgLoaded"></free-image>
+					<text class="iconfont text-white position-absolute text-center" style="font-size: 80rpx; width: 80rpx;height: 80rpx;line-height: 80rpx;" :style="videoControlStyle">&#xe737;</text>
+				</view>
 			</view>
 			<!-- 自己 -->
 			<view class="flex align-start justify-end mt-3" :key="index" v-else @longpress="handleLongPress">
 				<text class="iconfont font-md  position-absolute text-chat-item chat-right-icon" v-if="item.type == 'text' || item.type == 'audio'">&#xe640;</text>
 				<text class="p-2 rounded  mr-3 font-md bg-chat-item " style="max-width: 500rpx;" v-if="item.type == 'text'">{{item.data}}</text>
-				<text class="p-2 rounded  mr-3 font-md bg-chat-item font" style="max-width: 500rpx;" v-if="item.type == 'audio'" @click="audioPlayer">4'</text>
+				
+				<text class="p-2 rounded  mr-3 font-md bg-chat-item font flex align-center" style="max-width: 500rpx;" v-if="item.type == 'audio'" @click="audioPlayer">
+					<image class="mx-1" style="width: 50rpx;height: 50rpx;" :src="isStop ?'/static/audio/play.gif':  '/static/audio/audio3.png' " mode=""></image>
+					<text :style="audioChatBoxStyle">{{item.options.time}}"</text>
+					
+				</text>
+					
 				<text class="p-2 rounded  mr-3 font-md  " style="max-width: 500rpx;" v-if="item.type == 'emotion' || item.type == 'image'" @click="previewImg">
 					<free-image :src='item.data'></free-image>
 				</text>
 				
-				<free-avatar :src="item.avatar" size="70" ></free-avatar>
+				<view class="position-relative rounded" v-if="item.type == 'video'" @click="goPalyVideo(item)">
+					<free-image :src="item.options.poster" @loaded="handImgLoaded" :maxWidth="300"></free-image>
+					<text class="iconfont text-white position-absolute text-center" style="font-size: 80rpx; width: 80rpx;height: 80rpx;line-height: 80rpx;" :style="videoControlStyle">&#xe737;</text>
+				</view>
+				
+				<free-avatar :src="item.avatar" size="70" avatarType="navigate"></free-avatar>
 			</view>
 		</template>
 	</view>
@@ -64,11 +82,28 @@
 			}
 		},
 		computed: {
+			audioChatBoxStyle() {
+				if(this.item.type == 'audio') {
+					let time = this.item.options.time || 0
+					let W = time / (60 / 500)
+					W = W < 150 ? 150 : W
+					return `width: ${W}rpx;`
+				}
+			},
 			isSelf() {
 				return this.item.id === 1
 			},
 			showTime() {
 				return $T.getChatTime(this.item.create_time, this.proTime)
+			},
+			videoControlStyle() {
+				let style = ''
+				if(this.imgW && this.imgH) {
+					let left = this.imgW / 2 - uni.upx2px(80) / 2
+					let top = this.imgH / 2 - uni.upx2px(80) / 2
+					style = `left: ${left}px;;top: ${top}px;`
+				}
+				return style
 			}
 		},
 		data() {
@@ -76,6 +111,9 @@
 				w: '',
 				h: '',
 				innerAudioContext:null,
+				isStop:false,
+				imgW: '',
+				imgH: '',
 			}
 		},
 		mounted() {
@@ -85,7 +123,7 @@
 				}
 			})
 			if(this.item.type === 'audio') {
-				this.$on(this.onAduioEvent)
+				this.audioOn(this.onAduioEvent)
 				// this.$store.dispatch('$on',(res)=>{console.log(res,'3333');})
 			}
 		},
@@ -93,7 +131,7 @@
 			if(this.item.type === 'audio') {
 				// this.$off(this.onAduioEvent)
 				// this.$store.dispatch('$off',this.onAduioEvent)
-				this.$off(this.onAduioEvent)
+				this.audioOff(this.onAduioEvent)
 			}
 			if(this.innerAudioContext) {
 				this.innerAudioContext.destroy()
@@ -101,12 +139,26 @@
 			}
 		},
 		methods: {
-			...mapActions(['$on','$emit','$off']),
+			...mapActions(['audioOn','audioEmit','audioOff']),
+			// 播放视频
+			goPalyVideo(item) {
+				uni.navigateTo({
+					url: `/pages/video/video?url=${item.data}`,
+					success: res => {},
+					fail: () => {},
+					complete: () => {}
+				});
+			},
+			// 处理自适应图片的宽高
+			handImgLoaded(e) {
+				this.imgW = e.w
+				this.imgH = e.h
+			},
 			// 监听音频事件
 			onAduioEvent(index) {
 				if(this.innerAudioContext) {
 					if(index !== this.index) {
-						this.innerAudioContext.stop()
+						this.innerAudioContext.pause()
 					}
 				}
 				console.log(index,'3333');
@@ -115,12 +167,24 @@
 			audioPlayer() {
 				console.log(this.item.data,'播放音频...');
 				// this.$store.dispatch('$emit',this.index)
-				this.$emit(this.index)
+				this.audioEmit(this.index)
 				if(!this.innerAudioContext){
 					this.innerAudioContext = uni.createInnerAudioContext();
 					this.innerAudioContext.autoplay = true;
 					this.innerAudioContext.src = this.item.data;
 					this.innerAudioContext.play()
+					this.innerAudioContext.onPlay(() => {
+						this.isStop = true
+					})
+					this.innerAudioContext.onPause(() => {
+						this.isStop = false
+					})
+					this.innerAudioContext.onStop(() => {
+						this.isStop = false
+					})
+					this.innerAudioContext.onError(() => {
+						this.isStop = false
+					})
 				} else {
 					this.innerAudioContext.stop()
 					// this.innerAudioContext.src = this.item.data;

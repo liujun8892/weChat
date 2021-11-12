@@ -1,0 +1,43 @@
+<template>
+	<view class="position-relative">
+		<video :src="videoUrl" controls autoplay :style="{height: pageH + 'px',width: pageW + 'px'}" @ended="back"></video>
+		<view class="position-absolute flex align-center justify-center" style="width: 80rpx;height: 80rpx;top: 70rpx;left: 20rpx;background-color: rgba(255,255,255,0.3);" @click="back">
+			<text class="iconfont font-lg text-white">&#xe620;</text>
+		</view>
+	</view>
+</template>
+
+<script>
+	export default {
+		onLoad(opts) {
+			if(!opts.url) {
+				uni.showToast({
+					title: '非法视频'
+				});
+				this.back()
+				return
+			}
+			this.videoUrl = opts.url
+			this.pageH = uni.getSystemInfoSync().windowHeight
+			this.pageW = uni.getSystemInfoSync().windowWidth
+		},
+		data() {
+			return {
+				videoUrl: '',
+				pageH: '',
+				pageW: '',
+			}
+		},
+		methods:{
+			back() {
+				uni.navigateBack({
+					delta: 1
+				});
+			}
+		}
+	}
+</script>
+
+<style>
+
+</style>

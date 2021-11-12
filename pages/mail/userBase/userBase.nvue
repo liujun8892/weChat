@@ -1,0 +1,136 @@
+<template>
+	<view class="page">
+		<!-- 导航栏 -->
+		<free-nav-bar :bgWhite="true" showBack>
+			<free-icon-button slot="rightIcon" :icon="'\ue6fd'" @click="search"></free-icon-button>
+		</free-nav-bar>
+		<free-my-list :cover="userInfo.cover" :userName="userInfo.userName" isUserBase @click="handBaseUserInfo">
+			<text class="font text-light-muted mt-1">账号: summer</text>
+			<text class="font text-light-muted mt-1">地区: 广东广州</text>
+		</free-my-list>
+		<view class="border-bottom"></view>
+		<block v-for="(item,index) in userBaseList" :key="index">
+			<free-find-list :item="item">
+				<text class="font text-light-muted" v-if="item.isText">哈哈</text>
+				<image src="../../../static/images/demo/cate_01.png" mode="" style="width: 90rpx;height: 90rpx;"
+					class="mr-2" v-if="item.isImg"></image>
+				<image src="../../../static/images/demo/cate_01.png" mode="" style="width: 90rpx;height: 90rpx;"
+					class="mr-2" v-if="item.isImg"></image>
+			</free-find-list>
+			<free-divider v-if="item.isDivider"></free-divider>
+		</block>
+		<view class="bg-white flex align-center justify-center py-3">
+			<text class="iconfont text-primary mr-1">&#xe64e;</text>
+			<text class="font-md text-primary">发消息</text>
+		</view>
+
+		<free-popup ref="actionPopup" :positionBottom="true" :maskShow="true" @hideBottomPop="hideBottomPop"
+			hideOrigin="center bottom" :defaultMask="true">
+			<scroll-view scroll-y="true" style="height: 580rpx;" class="bg-white">
+				<block v-for="(item, index) in findList">
+					<free-find-list :key="index" :item="item" :isShowRight="false"  :isBoderBottom="false"> </free-find-list>
+				</block>
+			</scroll-view>
+		</free-popup>
+	</view>
+</template>
+
+<script>
+	import freeNavBar from '@/component/free-ui/free-nav-bar.vue'
+	import freeIconButton from '@/component/free-ui/free-icon-button.vue'
+	import freeMyList from '@/component/free-ui/free-my-list.vue'
+	import freeFindList from '@/component/free-ui/free-find-list.vue'
+	import freeDivider from '@/component/free-ui/free-divider.vue'
+	import freePopup from '@/component/free-ui/free-popup.vue'
+	export default {
+		components: {
+			freeNavBar,
+			freeIconButton,
+			freeMyList,
+			freeFindList,
+			freeDivider,
+			freePopup
+		},
+		data() {
+			return {
+				userInfo: {
+					id: '',
+					cover: '/static/images/demo/demo6.jpg',
+					userName: '刘易阳',
+					userNumber: 'sunshine'
+				},
+				// 发现列表
+				findList: [{
+					icon: '\ue63b',
+					name: '设置为备注和标签',
+					avatar: '/static/images/mail/friend.png',
+					isDivider: true
+				}, {
+					icon: '\ue613',
+					name: '把他推荐给朋友',
+					avatar: '/static/images/mail/friend.png',
+					isDivider: true
+				}, {
+					icon: '\ue6b0',
+					name: '设为星标朋友',
+					avatar: '/static/images/mail/friend.png',
+					isDivider: true
+				},{
+					icon: '\ue667',
+					name: '设置朋友圈和动态权限',
+					avatar: '/static/images/mail/friend.png',
+					isDivider: true
+				},{
+					icon: '\ue638',
+					name: '加入黑名单',
+					avatar: '/static/images/mail/friend.png',
+					isDivider: true
+				},{
+					icon: '\ue61c',
+					name: '投诉',
+					avatar: '/static/images/mail/friend.png',
+					isDivider: true
+				},
+				
+				
+				],
+				userBaseList: [{
+						icon: '',
+						name: '标签',
+						avatar: '',
+						isDivider: true,
+						isText: true
+					},
+					{
+						icon: '',
+						name: '朋友圈',
+						avatar: '',
+						isDivider: false,
+						isImg: true
+					},
+					{
+						icon: '',
+						name: '更多信息',
+						avatar: '',
+						isDivider: true
+					}
+				]
+			}
+		},
+		methods: {
+			// 隐藏弹框
+			hideBottomPop() {
+				console.log('子组件消息隐藏。。。');
+				this.keybordHeight = 0
+			},
+			handBaseUserInfo() {
+				this.$refs.actionPopup.showPopup(0, 0)
+				console.log('8899');
+			}
+		}
+	}
+</script>
+
+<style>
+
+</style>

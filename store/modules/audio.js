@@ -24,15 +24,15 @@ export default {
 	},
 	actions:{
 		// 全局注册事件
-		$on({commit},event) {
+		audioOn({commit},event) {
 			commit('regEvent',event)
 		},
 		// 全局消费事件
-		$emit({commit},params) {
+		audioEmit({commit},params) {
 			commit('doEvent',params)
 		},
 		// 全局注销事件
-		$off({commit},currentEvent) {
+		audioOff({commit},currentEvent) {
 			commit('destoryEvent',currentEvent)
 		}
 	}

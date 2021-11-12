@@ -10,18 +10,26 @@
 			:style="{top: contentFixedHeight + 'px',bottom: getChatContentHeight + 'px'}" @click="handChatClick">
 			<block v-for="(item, index) in chatList">
 				<free-chat-item :item="item" :index="index" :key="index"
-					:proTime="index === 0 ? 0 : chatList[index-1].create_time" @long="handleLongPress" @previewImg="handPreviewImg"
-					ref="freeChatItem"></free-chat-item>
+					:proTime="index === 0 ? 0 : chatList[index-1].create_time" @long="handleLongPress"
+					@previewImg="handPreviewImg" ref="freeChatItem"></free-chat-item>
 			</block>
 		</scroll-view>
 
 		<!-- 底部聊天输入框 -->
 		<view class="position-fixed left-0 right-0 flex align-center border-top"
 			style="background-color: #f7f7f6;height: 105rpx;" :style="{bottom: keybordHeight + 'px'}">
-			<free-icon-button :icon="'\ue606'" slot="rightIcon"></free-icon-button>
+			<free-icon-button :icon="(chatMode == 'audio') ? '\ue607' : '\ue606'" slot="rightIcon"
+				@click="changeVoiceIpt"></free-icon-button>
 			<view class="flex-1">
-				<textarea fixed class="p-2 bg-white rounded font-md" style="height: 75rpx;" :adjust-position="false"
-					v-model="chatMsg" @focus="handleChatFocus" @blur="handleChatBlur"></textarea>
+				<view class="flex align-center justify-center rounded"
+					:class="isRecording ? 'bg-hover-light' : 'bg-white'" style="height: 80rpx;"
+					v-if="chatMode == 'audio'" @touchstart="voiceStart" @touchend="voiceEnd" @touchmove="voiceMove"
+					@touchcancel="voiceCancel">
+					<text class="font">{{isRecording ? '松开 结束' : '按住 说话'}}</text>
+				</view>
+				<textarea v-else fixed class="p-2 bg-white rounded font-md" style="height: 75rpx;"
+					:adjust-position="false" v-model="chatMsg" @focus="handleChatFocus"
+					@blur="handleChatBlur"></textarea>
 			</view>
 			<free-icon-button :icon="'\ue605'" slot="rightIcon" @click="openAction('emotion')"></free-icon-button>
 			<free-icon-button :icon="'\ue603'" slot="rightIcon" v-if="!chatMsg || chatMsg == ''"
@@ -58,6 +66,16 @@
 				</swiper>
 			</view>
 		</free-popup>
+
+		<!-- 语音输入动画model -->
+		<view class="position-fixed left-0 right-0 top-0 flex align-center justify-center" style="bottom: 105rpx;"
+			v-if="isRecording">
+			<view class="rounded flex flex-column align-center justify-center"
+				style="width: 360rpx;height:360rpx;background : rgba(0,0,0,0.5);">
+				<image src="/static/audio/recording.gif" mode="" style="width: 150rpx;height: 150rpx;"></image>
+				<text class="font text-white mt-3">{{unRecording ? '松开手指，取消发送' : '手指上划，取消发送'}}</text>
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -69,6 +87,7 @@
 	// #ifdef APP-PLUS-NVUE
 	let domModule = weex.requireModule('dom')
 	// #endif
+	const recorderManager = uni.getRecorderManager();
 	export default {
 		components: {
 			freeNavBar,
@@ -93,11 +112,20 @@
 		},
 		data() {
 			return {
+				isRecording: false,
 				chatMsg: '',
 				keybordHeight: 0,
-				chatMode: '',
+				chatMode: '', // audio
 				emotionOrActionData: [],
 				emotionData: [],
+				// 录制的距离
+				recordingMoveDistance: 0,
+				// 取消录制
+				unRecording: false,
+				// 录制时长
+				recordingTime: 0,
+				// 录制定时器
+				recordingIntervel: null,
 				actionData: [
 					[{
 							name: '相册',
@@ -227,6 +255,9 @@
 						avatar: '/static/images/demo/demo6.jpg',
 						type: 'audio',
 						data: '/static/audio/1.mp3',
+						options: {
+							time: 40
+						},
 						create_time: 1632133464,
 						isRemove: false,
 						isAnimation: true
@@ -237,6 +268,22 @@
 						avatar: '/static/images/demo/demo6.jpg',
 						type: 'audio',
 						data: '/static/audio/2.mp3',
+						options: {
+							time: 44
+						},
+						create_time: 1632133464,
+						isRemove: false,
+						isAnimation: true
+					},
+					{
+						id: 0,
+						nickname: '赵子龙',
+						avatar: '/static/images/demo/demo6.jpg',
+						type: 'audio',
+						data: '/static/audio/3.mp3',
+						options: {
+							time: 20
+						},
 						create_time: 1632133464,
 						isRemove: false,
 						isAnimation: true
@@ -245,8 +292,11 @@
 						id: 1,
 						nickname: '赵子龙',
 						avatar: '/static/images/demo/demo6.jpg',
-						type: 'audio',
-						data: '/static/audio/3.mp3',
+						type: 'video',
+						data: '/static/video/demo.mp4',
+						options: {
+							poster: '/static/video/demo.jpg'
+						},
 						create_time: 1632133464,
 						isRemove: false,
 						isAnimation: true
@@ -272,12 +322,57 @@
 					}
 				}, 50)
 			})
+			recorderManager.onStart(() => {
+				this.recordingTime = 0
+				this.recordingIntervel = setInterval(() => {
+					this.recordingTime++
+				}, 1000)
+			})
+			recorderManager.onStop((e) => {
+				if (this.recordingIntervel) {
+					clearInterval(this.recordingIntervel)
+					this.recordingIntervel = null
+				}
+				if (!this.unRecording) {
+					this.sendMsg('audio', e.tempFilePath, {
+						time: this.recordingTime
+					})
+				}
+			})
 		},
 		methods: {
+			// 语音输入
+			voiceStart(e) {
+				this.unRecording = false
+				this.isRecording = true
+				this.recordingMoveDistance = e.touches[0].screenY
+
+				recorderManager.start({
+					format: 'mp3'
+				});
+			},
+			voiceEnd() {
+				this.isRecording = false
+				recorderManager.stop()
+			},
+			voiceMove(e) {
+				this.isRecording = true
+				let Y = Math.abs(e.touches[0].screenY - this.recordingMoveDistance)
+				this.unRecording = Y > 50
+			},
+			voiceCancel() {
+				this.isRecording = false
+				this.unRecording = true
+				recorderManager.stop()
+			},
+			// 改变语音输入
+			changeVoiceIpt() {
+				this.chatMode = this.chatMode !== 'audio' ? 'audio' : 'text'
+			},
 			// 处理图片预览
 			handPreviewImg(url) {
-				console.log(url,'预览图片');
-				console.log(this.getPreviewUrls,'预览的图片..');
+				console.log(url, '预览图片');
+				console.log(this.getPreviewUrls, '预览的图片..');
 				uni.previewImage({
 					current: url,
 					urls: this.getPreviewUrls
@@ -316,7 +411,7 @@
 			// 失去焦点
 			handleChatBlur() {
 				// this.chatMode = ''
-				
+
 			},
 			// 输入框聚焦
 			handleChatFocus() {
@@ -328,17 +423,24 @@
 			// 操作选项。。
 			handleAction(e, item) {
 				e.stopPropagation()
-				if(item.event == 'emotion') {
-					this.sendMsg('emotion',item)
-				}else if(item.event == 'album') {
+				if (item.event == 'emotion') {
+					this.sendMsg('emotion', item)
+				} else if (item.event == 'album') {
 					uni.chooseImage({
-						count:9,
+						count: 9,
 						success: (res) => {
 							res.tempFilePaths.forEach(v => {
-								this.sendMsg('image',v)
+								this.sendMsg('image', v)
 							})
 						}
 					})
+				} else if (item.event === 'shoot') {
+					uni.chooseVideo({
+						maxDuration:10,
+						success: (res)  => {
+							this.sendMsg('video',res.tempFilePath)
+						}
+					});
 				}
 			},
 			// 隐藏弹框
@@ -368,13 +470,14 @@
 				}
 			},
 			// 发送消息
-			sendMsg(type,item) {
+			sendMsg(type, item, options = {}) {
 				let msg = {
 					id: 1,
 					nickname: '赵子龙',
 					avatar: '/static/images/demo/demo6.jpg',
 					type: type,
 					data: '',
+					options,
 					create_time: new Date().getTime(),
 					isRemove: false,
 					isAnimation: true
@@ -389,6 +492,12 @@
 					case 'image':
 						msg.data = item
 						break;
+					case 'audio':
+						msg.data = item
+						break;
+					case 'video':
+						msg.data = item
+						break;
 					default:
 						break;
 				}
@@ -396,7 +505,7 @@
 					this.chatList.push(msg)
 					setTimeout(() => {
 						this.pageToBottom()
-						if(type == 'text') {
+						if (type == 'text') {
 							this.chatMsg = ''
 						}
 					}, 50)
