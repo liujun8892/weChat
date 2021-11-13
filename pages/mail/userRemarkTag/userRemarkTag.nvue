@@ -1,0 +1,70 @@
+<template>
+	<view class="page">
+		<!-- 导航栏 -->
+		<free-nav-bar :bgWhite="true" showBack title="设置备注和标签">
+			<view class="main-bg-color rounded px-2 py-1 mr-2" slot="rightIcon" @click="saveRemark">
+				<text class="font text-white">完成</text>
+			</view>
+		</free-nav-bar>
+		<!-- 备注名 -->
+		<view class="flex flex-column">
+			<text class="font-sm text-secondary px-3 py-2">备注名</text>
+			<input type="text" placeholder="请填写备注名" class="font-md border bg-white px-3" style="height: 100rpx;" v-model="remarkName">
+		</view>
+		<!-- 标签 -->
+		<view class="flex flex-column">
+			<text class="font-sm text-secondary px-3 py-2">标签</text>
+			<view class="bg-white px-3 pt-2 pb-1 flex flex-wrap" @click="goTagSet">
+				<view class="border rounded-circle px-2 py-1 mr-1 mb-1 main-border-color"  v-for="(item,index) in tagList" :key="index" >
+					<text class="font main-text-color" >{{item}}</text>
+				</view>	
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	import freeNavBar from '@/component/free-ui/free-nav-bar.vue'
+	import freeIconButton from '@/component/free-ui/free-icon-button.vue'
+	
+	export default { 
+		components: {
+			freeNavBar,
+			freeIconButton,
+		},
+		data() {
+			return {
+				tagList: ['123','456','789'],
+				remarkName: ''
+			}
+		},
+		mounted() {
+			uni.$on('updateUserTagSet',(e) => {
+				this.tagList = e.tagList
+			})
+		},
+		beforeDestroy() {
+			uni.$off('updateUserTagSet')
+		},
+		methods: {
+			goTagSet() {
+				uni.navigateTo({
+					url: '../userTagSet/userTagSet?tagList=' + JSON.stringify(this.tagList)
+				});
+			},
+			saveRemark() {
+				uni.$emit('updateUserRemark',{
+					remarkName: this.remarkName,
+					tagList: this.tagList
+				})
+				uni.navigateBack({
+					delta:1
+				})
+			}
+		}
+	}
+</script>
+
+<style>
+
+</style>

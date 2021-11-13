@@ -1,5 +1,5 @@
 <template>
-	<view class="flex bg-white  align-stretch" hover-class="bg-pink">
+	<view class="flex bg-white  align-stretch" hover-class="bg-pink" @click="$emit('click')">
 		<view class="flex px-3 py-2 align-center">
 			<text class="iconfont font-lg">{{item.icon}}</text>
 		</view>

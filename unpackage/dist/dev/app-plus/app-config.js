@@ -87,9 +87,9 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/*!******************************************************************!*\
-  !*** /Users/liujun/Documents/HBuilderProjects/wxChat/pages.json ***!
-  \******************************************************************/
+/*!*********************************************!*\
+  !*** D:/dev/self/project/weChat/pages.json ***!
+  \*********************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -109,6 +109,8 @@ if (typeof Promise !== 'undefined' && !Promise.prototype.finally) {
 if(uni.restoreGlobal){
   uni.restoreGlobal(weex,plus,setTimeout,clearTimeout,setInterval,clearInterval)
 }
+
+
 
 
 

@@ -1,0 +1,89 @@
+<template>
+	<view class="page">
+		<!-- 导航栏 -->
+		<free-nav-bar :bgWhite="true" showBack title="添加标签">
+			<view class="main-bg-color rounded px-2 py-1 mr-2" slot="rightIcon" @click="saveTagList">
+				<text class="font text-white">保存</text>
+			</view>
+		</free-nav-bar>
+		<!-- 添加标签 -->
+		<view class="px-3 pt-2 pb-1 flex flex-wrap border-bottom" >
+			<view class="border rounded-circle px-2 py-1 mr-1 mb-1 main-border-color" v-for="(item,index) in tagList" :key="index" @click="delTag(index)">
+				<text class="font main-text-color" >{{item}}</text>
+			</view>	
+			<input type="text" class="border bg-white font rounded-circle text-center" placeholder="添加标签" style="border-style: dashed;width: 180rpx;margin-top: 5rpx;" v-model="tagIpt" confirm-type="send" @confirm="sendTag(tagIpt)"></input>
+		</view>
+		<!-- 所有标签 -->
+		<view class="flex flex-column">
+			<text class="font-sm text-secondary px-3 py-2">所有标签</text>
+			<view class=" px-3 pt-2 pb-1 flex flex-wrap" >
+				<view class="borde bg-white rounded-circle px-2 py-1 mr-1 mb-1 main-border-color"  v-for="(item,index) in allTagList" :key="index" @click="quickAddTag(item)">
+					<text class="font text-dark" >{{item}}</text>
+				</view>	
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	import freeNavBar from '@/component/free-ui/free-nav-bar.vue'
+	import freeIconButton from '@/component/free-ui/free-icon-button.vue'
+	export default {
+		components: {
+			freeNavBar,
+			freeIconButton
+		},
+		data() {
+			return {
+				tagIpt: '',
+				tagList: ['123','555','666','999'],
+				allTagList: ['哈哈','家人','亲戚','朋友','好友']
+			}
+		},
+		onLoad(opt) {
+			if(opt.tagList) {
+				this.tagList = JSON.parse(opt.tagList)
+			}
+			console.log(opt,'7788');
+		},
+		methods: {
+			saveTagList() {
+				uni.$emit('updateUserTagSet',{
+					tagList:this.tagList
+				})
+				uni.navigateBack({
+					delta: 1
+				});
+			},
+			sendTag(tag) {
+				if(!tag) return
+				if(this.tagList.indexOf(tag) !== -1)  {
+					return uni.showToast({
+						title: '标签已存在',
+						icon: 'none'
+					});
+				}
+				this.tagList.push(tag)
+				this.tagIpt = ''
+			},
+			quickAddTag(item) {
+				this.sendTag(item)
+			},
+			delTag(index) {
+				uni.showModal({
+					content: '是否删除该标签',
+					success: res => {
+						if(res.confirm) {
+							this.tagList.splice(index,1)
+						}
+					},
+				});
+			}
+			
+		}
+	}
+</script>
+
+<style>
+
+</style>

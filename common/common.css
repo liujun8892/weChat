@@ -21,6 +21,10 @@
 	color: #08c060;
 }
 
+.main-border-color {
+	border-color: #08c060;
+}
+
 .bg-chat-item {
 	background-color: #6BEE68;
 }

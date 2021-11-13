@@ -4,14 +4,17 @@
 		<free-nav-bar :bgWhite="true" showBack>
 			<free-icon-button slot="rightIcon" :icon="'\ue6fd'" @click="search"></free-icon-button>
 		</free-nav-bar>
-		<free-my-list :cover="userInfo.cover" :userName="userInfo.userName" isUserBase @click="handBaseUserInfo">
+		<free-my-list :cover="userInfo.cover" :userName="userInfo.remarkName || userInfo.userName" isUserBase @click="handBaseUserInfo">
 			<text class="font text-light-muted mt-1">账号: summer</text>
 			<text class="font text-light-muted mt-1">地区: 广东广州</text>
 		</free-my-list>
 		<view class="border-bottom"></view>
 		<block v-for="(item,index) in userBaseList" :key="index">
-			<free-find-list :item="item">
-				<text class="font text-light-muted" v-if="item.isText">哈哈</text>
+			<free-find-list :item="item" @click="handItemEvent(item)">
+				<template v-if="item.isText">
+					<text class="font text-light-muted mr-1" v-for="(item,index) in item.tagList">{{item}}</text>
+					<text class="font text-light-muted mr-1" v-if="item.tagList.length < 1">未设置</text>
+				</template>
 				<image src="../../../static/images/demo/cate_01.png" mode="" style="width: 90rpx;height: 90rpx;"
 					class="mr-2" v-if="item.isImg"></image>
 				<image src="../../../static/images/demo/cate_01.png" mode="" style="width: 90rpx;height: 90rpx;"
@@ -51,20 +54,34 @@
 			freeDivider,
 			freePopup
 		},
+		mounted() {
+			uni.$on('updateUserRemark',(e) => {
+				if(e.remarkName) {
+					this.userInfo.remarkName = e.remarkName
+				}
+				this.userBaseList[0].tagList = e.tagList
+				console.log(e,'更新用户信息');
+			})
+		},
+		beforeDestroy() {
+			uni.$off('updateUserRemark')
+		},
 		data() {
 			return {
 				userInfo: {
 					id: '',
 					cover: '/static/images/demo/demo6.jpg',
-					userName: '刘易阳',
-					userNumber: 'sunshine'
+					remarkName: '',
+					userNumber: 'sunshine',
+					userName: '刘易阳'
 				},
 				// 发现列表
 				findList: [{
-					icon: '\ue63b',
+					icon: '\ue6b3',
 					name: '设置为备注和标签',
 					avatar: '/static/images/mail/friend.png',
-					isDivider: true
+					isDivider: true,
+					event: 'remarkTag'
 				}, {
 					icon: '\ue613',
 					name: '把他推荐给朋友',
@@ -99,20 +116,25 @@
 						name: '标签',
 						avatar: '',
 						isDivider: true,
-						isText: true
+						isText: true,
+						event: 'remarkTag',
+						path: '../userRemarkTag/userRemarkTag',
+						tagList: []
 					},
 					{
 						icon: '',
 						name: '朋友圈',
 						avatar: '',
 						isDivider: false,
-						isImg: true
+						isImg: true,
+						event: ''
 					},
 					{
 						icon: '',
 						name: '更多信息',
 						avatar: '',
-						isDivider: true
+						isDivider: true,
+						event: ''
 					}
 				]
 			}
@@ -126,6 +148,22 @@
 			handBaseUserInfo() {
 				this.$refs.actionPopup.showPopup(0, 0)
 				console.log('8899');
+			},
+			handItemEvent(item) {
+				console.log(item);
+				switch (item.event){
+					case 'remarkTag':
+						this.navigator(item.path)
+						break;
+					default:
+						break;
+				}
+			},
+			navigator(path) {
+				uni.navigateTo({
+					url: path
+				});
+				
 			}
 		}
 	}
